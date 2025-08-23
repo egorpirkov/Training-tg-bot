@@ -3,14 +3,12 @@ import { resetUserData } from './userData';
 
 export const startHandler = (bot: TelegramBot, chatId: number) => {
   resetUserData(chatId);
-  bot.sendMessage(chatId, 'Привет! Давай начнем. Укажи свой пол:', {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'Мужской', callback_data: 'gender_male' },
-          { text: 'Женский', callback_data: 'gender_female' },
-        ],
-      ],
-    },
-  });
+  bot.sendMessage(chatId,
+    '🏋️ Добро пожаловать!\n\n' +
+    'Команды:\n' +
+    '/createprogram — создать программу пошагово (дни → проценты → подходы×повторы → 1ПМ)\n' +
+    '/trainingplan — ввести готовую программу текстом\n' +
+    '/rateexercise — оценить силовые (жим, подтягивания, брусья)',
+    { parse_mode: 'Markdown' }
+  );
 };

@@ -1,20 +1,19 @@
 import { TrainingSchedule } from "../types/training";
 
+/**
+ * Если weight ∈ (0,1] — считаем как процент от max, округляем к 2.5кг.
+ * Если weight > 1 — оставляем как есть (считаем, что это кг).
+ */
 export const calculateWeights = (max: number, schedule: TrainingSchedule): TrainingSchedule => {
-    const newSchedule: TrainingSchedule = {};
-
-    for (const [day, exercises] of Object.entries(schedule)) {
-        newSchedule[day] = exercises.map(ex => {
-            let { weight, reps } = ex;
-            if (weight > 0 && weight <= 1) {
-                weight = Math.round(max * weight);
-            } else if (Number.isInteger(weight) && weight >= 5 && weight <= 10) {
-                const rpePercentage = 1 - (10 - weight) * 0.025;
-                weight = Math.round(max * rpePercentage);
-            }
-            return { weight, reps };
-        });
-    }
-
-    return newSchedule;
+  const out: TrainingSchedule = {};
+  for (const [day, entries] of Object.entries(schedule)) {
+    out[day] = entries.map(({ weight, reps }) => {
+      let w = weight;
+      if (w > 0 && w <= 1) {
+        w = Math.round((max * w) / 2.5) * 2.5;
+      }
+      return { weight: w, reps };
+    });
+  }
+  return out;
 };

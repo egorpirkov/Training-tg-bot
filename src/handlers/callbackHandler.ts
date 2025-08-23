@@ -1,35 +1,27 @@
 import TelegramBot, { CallbackQuery } from 'node-telegram-bot-api';
-import { setUserData } from './userData'
+import { setUserData } from './userData';
 
 export const callbackHandler = (bot: TelegramBot, query: CallbackQuery) => {
   const chatId = query.message?.chat.id;
   const data = query.data;
-
   if (!chatId || !data) return;
 
-  if (data === 'gender_male' || data === 'gender_female') {
-    setUserData(chatId, {
-      gender: data === 'gender_male' ? 'male' : 'female'
-    });
-
-    bot.sendMessage(chatId, 'Отлично! Теперь выбери упражнение, которое хочешь делать:', {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: 'Жим лёжа', callback_data: 'exercise_bench' },
-            { text: 'Подтягивания', callback_data: 'exercise_pullups' },
-            { text: 'Отжимания на брусьях', callback_data: 'exercise_dips' }
-          ]
-        ]
-      }
-    });
+  // Только режимы оценки; без выбора пола
+  if (data === 'rate_bench') {
+    setUserData(chatId, { ratingExercise: 'bench', ratingMode: true, weight: undefined, BS: undefined });
+    bot.sendMessage(chatId, '💪 Введи вес тела (в кг):');
     return;
   }
 
-  if (data === 'exercise_bench' || data === 'exercise_pullups' || data === 'exercise_dips') {
-    setUserData(chatId, { exercise: data });
-    bot.sendMessage(chatId, `Вы выбрали упражнение: ${data}.`);
-    bot.sendMessage(chatId, 'Теперь введи свой возраст:');
+  if (data === 'rate_pullups') {
+    setUserData(chatId, { ratingExercise: 'pullups', ratingMode: true, PullUp: undefined });
+    bot.sendMessage(chatId, '💪 Введи количество подтягиваний:');
+    return;
+  }
+
+  if (data === 'rate_dips') {
+    setUserData(chatId, { ratingExercise: 'dips', ratingMode: true, PushUp: undefined });
+    bot.sendMessage(chatId, '💪 Введи количество отжиманий на брусьях:');
     return;
   }
 };
