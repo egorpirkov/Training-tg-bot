@@ -6,7 +6,6 @@ import { callbackHandler } from './handlers/callbackHandler';
 import { messageHandler } from './handlers/messageHandler';
 import { resetUserData, getUserData, setUserData } from './handlers/userData';
 import { startProgramCreation } from './utils/programCreation';
-// import { photoHandler } from './handlers/photoHandler';
 
 config();
 
@@ -30,10 +29,9 @@ bot.onText(/\/createprogram/, (msg) => {
   startProgramCreation(bot, chatId);
 });
 
-// /rateexercise — только выбор упражнения, без пола/возраста
+// /rateexercise
 bot.onText(/\/rateexercise/, (msg) => {
   const chatId = msg.chat.id;
-  // сбрасываем только режим оценки и связанные поля
   setUserData(chatId, { ratingMode: true, ratingExercise: undefined, weight: undefined, age: undefined });
   bot.sendMessage(chatId, '💪 Выбери упражнение для оценки:', {
     reply_markup: {
@@ -46,7 +44,7 @@ bot.onText(/\/rateexercise/, (msg) => {
   });
 });
 
-// /trainingplan — ввод плана текстом
+// /trainingplan
 bot.onText(/\/trainingplan/, (msg) => {
   bot.sendMessage(msg.chat.id,
     '📝 Отправь программу в текстовом виде.\n\n' +
@@ -61,13 +59,10 @@ bot.onText(/\/trainingplan/, (msg) => {
   );
 });
 
-// коллбеки (для /rateexercise)
+// общий обработчик callback_query
 bot.on('callback_query', (q) => callbackHandler(bot, q));
 
-// фото (если нужно OCR)
-// bot.on('photo', (msg) => photoHandler(bot, msg));
-
-// единый обработчик обычных сообщений
+// единый обработчик сообщений
 bot.on('message', (msg) => {
   if (msg.text && !msg.text.startsWith('/')) {
     messageHandler(bot, msg);

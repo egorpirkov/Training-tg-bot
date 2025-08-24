@@ -5,7 +5,7 @@ import { calculateWeights } from '../utils/calculateWeight';
 import { parseTrainingText, textLooksLikeProgram } from '../utils/parseTrainingText';
 import { handleProgramCreationMessage } from '../utils/programCreation';
 
-// импорт твоих оценивателей (оставляем как есть)
+// Логика упражнений
 import { Bench } from '../exercises/Bench';
 import { PullUp } from '../exercises/PullUp';
 import { Dips } from '../exercises/Dips';
@@ -17,19 +17,44 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
 
   const userData = getUserData(chatId);
 
-  // 0) Если мы в мастере создания программы — обрабатываем шаги
+  // 0) Пошаговый мастер программы
   if (userData.currentStep) {
     await handleProgramCreationMessage(bot, chatId, text);
     return;
   }
 
-  // 1) Режим оценки упражнений — строго по /rateexercise
+  // 1) Режим оценки упражнений
   if (userData.ratingMode) {
-    await handleExerciseRating(bot, msg, userData);
-    return;
+    // если нет пола → спрашиваем
+    if (!userData.gender) {
+      await bot.sendMessage(chatId, '👤 Укажи свой пол:', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '👨 Мужчина', callback_data: 'gender_male' },
+              { text: '👩 Женщина', callback_data: 'gender_female' }
+            ]
+          ]
+        }
+      });
+      return;
+    }
+
+    // когда пол выбран → обрабатываем упражнение
+    switch (userData.ratingExercise) {
+      case 'bench':
+        await Bench(bot, msg);
+        return;
+      case 'pullups':
+        await PullUp(bot, msg);
+        return;
+      case 'dips':
+        await Dips(bot, msg);
+        return;
+    }
   }
 
-  // 2) Если ранее распознали/ввели программу и ждём 1ПМ
+  // 2) Если ждём 1ПМ для программы
   if (trainingMemory[chatId]?.schedule && !trainingMemory[chatId]?.maxWeight) {
     const max = parseFloat(text.replace(',', '.'));
     if (isNaN(max) || max <= 0) {
@@ -53,7 +78,7 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
     return;
   }
 
-  // 3) Попробуем распарсить текст как тренировочный план, НО только если это реально похоже на план
+  // 3) Текстовая программа
   if (textLooksLikeProgram(text)) {
     const schedule = parseTrainingText(text);
     if (schedule && Object.keys(schedule).length) {
@@ -90,22 +115,3 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
       '/rateexercise — оценка упражнений'
   );
 };
-
-// === маршрутизация оценивателей ===
-async function handleExerciseRating(bot: TelegramBot, msg: Message, userData: any) {
-  const chatId = msg.chat.id;
-  switch (userData.ratingExercise) {
-    case 'bench':
-      await Bench(bot, msg);
-      break;
-    case 'pullups':
-      await PullUp(bot, msg);
-      break;
-    case 'dips':
-      await Dips(bot, msg);
-      break;
-    default:
-      setUserData(chatId, { ratingMode: false, ratingExercise: undefined });
-      await bot.sendMessage(chatId, 'Режим оценки сброшен. Используй /rateexercise заново.');
-  }
-}
