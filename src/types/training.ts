@@ -1,10 +1,13 @@
+// Подход (фиксированные веса или доли)
 export interface ExerciseEntry {
   weight: number; // кг или доля (0..1)
   reps: number;
 }
 
+// Расписание: день -> список подходов
 export type TrainingSchedule = Record<string, ExerciseEntry[]>;
 
+// Память для временных сохранений тренировок
 export interface TrainingMemory {
   text?: string;
   schedule?: TrainingSchedule;
@@ -12,29 +15,31 @@ export interface TrainingMemory {
   timestamp?: number;
 }
 
+// Конфиг дня
+export interface DayConfig {
+  sets: number;
+  reps: number;
+  percentage: number; // % от 1ПМ
+}
 
+// Конфиг недели
+export interface ProgramConfig {
+  [day: string]: DayConfig;
+}
+
+// Данные программы (может быть неполным, в процессе заполнения)
 export interface UserProgramData {
-  days?: string[];
-  exercise?: string;
-  sets?: number;
-  reps?: number[];
-  percentages?: number[];
+  weeks: ProgramConfig[];   // 👈 теперь всегда массив недель
   maxWeight?: number;
 }
 
-
-// types/training.ts
+// Полностью собранные данные программы
 export interface CompleteProgramData {
-  days: string[];
-  exercise: string;
-  sets: number;
-  reps: number[];
-  percentages: number[];
+  weeks: ProgramConfig[];
   maxWeight: number;
 }
 
-
-
+// Основное состояние пользователя
 export interface UserData {
   gender?: 'male' | 'female';
   age?: number;
@@ -49,10 +54,25 @@ export interface UserData {
   ratingMode?: boolean;
   ratingExercise?: 'bench' | 'pullups' | 'dips';
 
-  // Мастер-форма для конструкторов программ
-  exercise?: string;
+  // Конструктор программ
   programData?: UserProgramData;
-  currentStep?: 'days' | 'exercise' | 'sets' | 'reps' | 'percentages' | 'maxWeight';
+  currentStep?:
+  | 'days'
+  | 'percentages'
+  | 'sets'
+  | 'reps'
+  | 'maxWeight'
+  | 'addWeek'
+  | 'dayPercentReps'
+  | 'dayPercentSetsReps'; // <- добавлено
+  // новый шаг: процент + повторы за раз
+
+  // Временные данные (чтобы не потерять шаги между сообщениями)
+  tempDays?: string[];
+  tempPercentages?: number[];
+  tempRepsPerDay?: number[]; // новый массив для повторений по дням
+  tempSets?: number;
+  tempReps?: number;
 
   timestamp?: number;
   [key: string]: any;
