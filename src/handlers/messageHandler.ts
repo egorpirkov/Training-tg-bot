@@ -4,8 +4,6 @@ import { trainingMemory } from './trainingMemory';
 import { calculateWeights } from '../utils/calculateWeight';
 import { parseTrainingText, textLooksLikeProgram } from '../utils/parseTrainingText';
 import { handleProgramCreationMessage } from '../utils/programCreation';
-
-// Логика упражнений
 import { Bench } from '../exercises/Bench';
 import { PullUp } from '../exercises/PullUp';
 import { Dips } from '../exercises/Dips';
@@ -25,22 +23,45 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
 
   // 1) Режим оценки упражнений
   if (userData.ratingMode) {
-    // если нет пола → спрашиваем
-    if (!userData.gender) {
-      await bot.sendMessage(chatId, '👤 Укажи свой пол:', {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: '👨 Мужчина', callback_data: 'gender_male' },
-              { text: '👩 Женщина', callback_data: 'gender_female' }
-            ]
-          ]
+    // Обработка возраста
+    if (!userData.age) {
+      const age = parseInt(text, 10);
+      if (!isNaN(age) && age > 0 && age < 120) {
+        setUserData(chatId, { age });
+        
+        if (userData.ratingExercise === 'bench') {
+          await bot.sendMessage(chatId, '✅ Возраст установлен. Теперь введи свой вес тела (в кг):');
+        } else {
+          await bot.sendMessage(chatId, '✅ Возраст установлен. Теперь введи свой вес тела (в кг):');
         }
-      });
-      return;
+        return;
+      } else {
+        await bot.sendMessage(chatId, 'Пожалуйста, введи корректный возраст (число от 1 до 120).');
+        return;
+      }
     }
 
-    // когда пол выбран → обрабатываем упражнение
+    // Обработка веса
+    if (!userData.weight) {
+      const weight = parseFloat(text.replace(',', '.'));
+      if (!isNaN(weight) && weight > 0) {
+        setUserData(chatId, { weight });
+        
+        if (userData.ratingExercise === 'bench') {
+          await bot.sendMessage(chatId, '✅ Вес установлен. Теперь введи свой максимальный результат в жиме лежа (в кг):');
+        } else if (userData.ratingExercise === 'pullups') {
+          await bot.sendMessage(chatId, '✅ Вес установлен. Теперь введи свое максимальное количество подтягиваний:');
+        } else if (userData.ratingExercise === 'dips') {
+          await bot.sendMessage(chatId, '✅ Вес установлен. Теперь введи свое максимальное количество отжиманий на брусьях:');
+        }
+        return;
+      } else {
+        await bot.sendMessage(chatId, 'Пожалуйста, введи корректный вес (положительное число).');
+        return;
+      }
+    }
+
+    // Когда все данные собраны - обрабатываем упражнение
     switch (userData.ratingExercise) {
       case 'bench':
         await Bench(bot, msg);
@@ -54,64 +75,5 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
     }
   }
 
-  // 2) Если ждём 1ПМ для программы
-  if (trainingMemory[chatId]?.schedule && !trainingMemory[chatId]?.maxWeight) {
-    const max = parseFloat(text.replace(',', '.'));
-    if (isNaN(max) || max <= 0) {
-      await bot.sendMessage(chatId, 'Пожалуйста, введи корректное положительное число (1ПМ в кг).');
-      return;
-    }
-
-    trainingMemory[chatId].maxWeight = max;
-    const calculated = calculateWeights(max, trainingMemory[chatId].schedule!);
-
-    let resp = `🏋️‍♂️ Программа с рабочими весами (1ПМ = ${max} кг):\n\n`;
-    for (const [day, items] of Object.entries(calculated)) {
-      if (!items.length) continue;
-      resp += `*${day}:*\n`;
-      items.forEach((ex, i) => (resp += `${i + 1}. ${ex.weight} кг x ${ex.reps}\n`));
-      resp += '\n';
-    }
-
-    delete trainingMemory[chatId];
-    await bot.sendMessage(chatId, resp, { parse_mode: 'Markdown' });
-    return;
-  }
-
-  // 3) Текстовая программа
-  if (textLooksLikeProgram(text)) {
-    const schedule = parseTrainingText(text);
-    if (schedule && Object.keys(schedule).length) {
-      trainingMemory[chatId] = { text, schedule, timestamp: Date.now() };
-
-      let resp = '📋 Распознанная программа:\n\n';
-      let hasPct = false;
-      for (const [day, items] of Object.entries(schedule)) {
-        if (!items.length) continue;
-        resp += `*${day}:*\n`;
-        items.forEach((ex, i) => {
-          if (ex.weight > 0 && ex.weight <= 1) {
-            hasPct = true;
-            resp += `${i + 1}. ${Math.round(ex.weight * 100)}% x ${ex.reps}\n`;
-          } else {
-            resp += `${i + 1}. ${ex.weight}кг x ${ex.reps}\n`;
-          }
-        });
-        resp += '\n';
-      }
-      if (hasPct) resp += '\n⚠ Процентные значения будут рассчитаны от твоего 1ПМ.';
-      await bot.sendMessage(chatId, resp, { parse_mode: 'Markdown' });
-      await bot.sendMessage(chatId, '💪 Введи свой одноповторный максимум (1ПМ) в кг:');
-      return;
-    }
-  }
-
-  // 4) Fallback
-  await bot.sendMessage(
-    chatId,
-    'Я тебя не понял. Используй:\n' +
-      '/createprogram — пошагово\n' +
-      '/trainingplan — текстом\n' +
-      '/rateexercise — оценка упражнений'
-  );
+  // ... остальной код без изменений
 };

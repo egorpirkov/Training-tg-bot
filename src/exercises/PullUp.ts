@@ -1,7 +1,7 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
 import { getUserData, setUserData } from '../handlers/userData';
 
-export const PullUp = (bot: TelegramBot, msg: Message) => {
+export const PullUp = async (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;
   const text = msg.text?.trim();
   if (!text) return;
@@ -13,8 +13,8 @@ export const PullUp = (bot: TelegramBot, msg: Message) => {
     if (!isNaN(pullUps) && pullUps >= 0) {
       setUserData(chatId, { PullUp: pullUps });
 
-      const age = userData.age!;
-      const weight = userData.weight!;
+      const age = userData.age || 25; // значение по умолчанию
+      const weight = userData.weight || 70; // значение по умолчанию
 
       const weightFactor = weight / 70;
       const threshold = (base: number) => Math.round(base * weightFactor);
@@ -46,13 +46,16 @@ export const PullUp = (bot: TelegramBot, msg: Message) => {
         else if (pullUps >= threshold(3)) evaluation = 'Неплохо, продолжай в том же духе!';
         else evaluation = 'Время тренироваться, ты сможешь!';
       } else {
-        evaluation = 'Возраст неизвестен, но главное — тренироваться!';
+        evaluation = 'Главное — тренироваться!';
       }
 
-      bot.sendMessage(chatId, evaluation);
-      bot.sendMessage(chatId, 'Спасибо! Все данные получены.');
+      await bot.sendMessage(chatId, evaluation);
+      await bot.sendMessage(chatId, 'Спасибо! Все данные получены.');
+      
+      // Сбрасываем режим оценки
+      setUserData(chatId, { ratingMode: false, ratingExercise: undefined });
     } else {
-      bot.sendMessage(chatId, 'Пожалуйста, введи корректное число подтягиваний.');
+      await bot.sendMessage(chatId, 'Пожалуйста, введи корректное число подтягиваний.');
     }
   }
 };
