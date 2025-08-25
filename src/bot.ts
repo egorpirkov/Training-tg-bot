@@ -21,7 +21,7 @@ bot.onText(/\/start/, (msg) => {
   startHandler(bot, chatId);
 });
 
-// /createprogram — пошаговый мастер
+// /createprogram 
 bot.onText(/\/createprogram/, (msg) => {
   const chatId = msg.chat.id;
   const u = getUserData(chatId);

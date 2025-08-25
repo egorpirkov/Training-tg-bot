@@ -2,27 +2,28 @@ import TelegramBot from 'node-telegram-bot-api';
 import { getUserData, setUserData } from '../handlers/userData';
 import { UserProgramData, DayConfig, ProgramConfig } from '../types/training';
 
-// генератор вывода программы
-// генератор вывода программы с весами
+
 function generateProgramText(programData: UserProgramData) {
   const { weeks, maxWeight } = programData;
   if (!weeks || !maxWeight) return "Нет данных для программы.";
 
-  let resp = `🏋‍♂ Программа с рабочими весами (1ПМ = ${maxWeight} кг):\n\n`;
+  let resp = `🏋‍♂ *Вот программа тренировок в соответствии с твоим*\n_1ПМ = ${maxWeight} кг_\n\n`;
 
   weeks.forEach((week, wi) => {
-    resp += `📅 Неделя ${wi + 1}:\n\n`;
+    resp += `📅 *Неделя ${wi + 1}*\n`;
     for (const [day, cfg] of Object.entries(week)) {
       const weightKg = Math.round((cfg.percentage / 100) * maxWeight);
-      resp += `${day}: ${weightKg} кг (${cfg.percentage}% от 1ПМ) на ${cfg.reps} повторений x ${cfg.sets} подходов\n`;
+      resp += `• *${day.toUpperCase()}*: ${weightKg} кг (${cfg.percentage}%) — ${cfg.reps}x${cfg.sets}\n`;
     }
-    resp += "\n";
+    resp += `\n`;
   });
+
 
   return resp;
 }
 
-// старт создания программы
+
+
 export async function startProgramCreation(bot: TelegramBot, chatId: number) {
   setUserData(chatId, {
     programData: { weeks: [] },
@@ -32,11 +33,11 @@ export async function startProgramCreation(bot: TelegramBot, chatId: number) {
   await bot.sendMessage(
     chatId,
     '🏋️ Создадим вашу программу тренировок!\n\n' +
-      '📅 В какие дни вы тренируетесь? (например: пн, ср, пт или вт, чт, сб)'
+    '📅 В какие дни вы тренируетесь? (пиши: пн, ср, пт или вт, чт, сб)'
   );
 }
 
-// обработка сообщений
+
 export async function handleProgramCreationMessage(
   bot: TelegramBot,
   chatId: number,
@@ -66,7 +67,7 @@ export async function handleProgramCreationMessage(
         .map(s => s.trim())
         .filter(Boolean)
         .map(normDay)
-        .filter(d => ['пн','вт','ср','чт','пт','сб','вс'].includes(d));
+        .filter(d => ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'].includes(d));
 
       if (!days.length) {
         await bot.sendMessage(chatId, 'Не понял дни. Пример: "пн, ср, пт"');
@@ -82,9 +83,17 @@ export async function handleProgramCreationMessage(
 
       await bot.sendMessage(
         chatId,
-        `Ок, дни: ${days.join(', ')}.\n📊 Введи для каждого дня процент от 1ПМ, подходы и повторения через пробел.\n` +
-        `Пример:\nпн 70 5x7\nср 40 3x4\nпт 60 4x6`
+        `✅ Ок, выбранные дни: ${days.join(', ')}\n\n` +
+        `📊 Для каждого дня введи процент от 1ПМ, количество подходов и повторений через пробел.\n\n` +
+        `📌 Пример ввода:\n` +
+        `пн 70 5x7\n` +
+        `ср 40 3x4\n` +
+        `пт 60 4x6\n\n` +
+        `ℹ️ Числа типа "70", "80" — это процент от твоего максимума (1ПМ).\n` +
+        `Например, 70% от твоего максимума = 70 кг.`
       );
+
+
       return;
     }
 
@@ -102,7 +111,7 @@ export async function handleProgramCreationMessage(
       for (const line of lines) {
         const parts = line.split(/\s+/);
         if (parts.length !== 3) {
-          await bot.sendMessage(chatId, 'Ошибка формата. Пример: "пн 70 5x7"');
+          await bot.sendMessage(chatId, 'Не понял. Пример: "пн 70 5x7"');
           return;
         }
 
@@ -142,7 +151,7 @@ export async function handleProgramCreationMessage(
     case 'maxWeight': {
       const max = parseFloat(text.replace(',', '.'));
       if (isNaN(max) || max <= 0) {
-        await bot.sendMessage(chatId, 'Введи корректный 1ПМ (в кг).');
+        await bot.sendMessage(chatId, 'Пожалуйста,введи корректный 1ПМ (в кг).');
         return;
       }
 
@@ -168,7 +177,7 @@ export async function handleProgramCreationMessage(
       setUserData(chatId, { programData: pd, currentStep: 'addWeek' });
 
       await bot.sendMessage(chatId, generateProgramText(pd), { parse_mode: 'Markdown' });
-      await bot.sendMessage(chatId, '➕ Хочешь добавить ещё одну неделю с другими нагрузками? (да/нет)');
+      await bot.sendMessage(chatId, '➕ Добавить ещё одну неделю с другими нагрузками? (да/нет)');
       return;
     }
 
@@ -177,7 +186,7 @@ export async function handleProgramCreationMessage(
         setUserData(chatId, { currentStep: 'days' });
         await bot.sendMessage(chatId, '📅 Введи дни для следующей недели:');
       } else {
-        await bot.sendMessage(chatId, '✅ Программа завершена!');
+        await bot.sendMessage(chatId, '✅Отлично,Программа завершена!');
         setUserData(chatId, { currentStep: undefined });
       }
       return;

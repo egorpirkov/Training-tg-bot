@@ -19,7 +19,7 @@ export function parseTrainingText(raw: string): TrainingSchedule | null {
   const classicPattern = /(\d+(?:[.,]\d+)?)\s*[xх]\s*(\d+)/i;
 
   for (const line of lines) {
-    // если это заголовок дня
+    
     if (dayPattern.test(line.toLowerCase())) {
       currentDay = line.replace(/:$/, '');
       continue;

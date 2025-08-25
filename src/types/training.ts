@@ -64,13 +64,12 @@ export interface UserData {
   | 'maxWeight'
   | 'addWeek'
   | 'dayPercentReps'
-  | 'dayPercentSetsReps'; // <- добавлено
-  // новый шаг: процент + повторы за раз
-
+  | 'dayPercentSetsReps';
+  
   // Временные данные (чтобы не потерять шаги между сообщениями)
   tempDays?: string[];
   tempPercentages?: number[];
-  tempRepsPerDay?: number[]; // новый массив для повторений по дням
+  tempRepsPerDay?: number[];
   tempSets?: number;
   tempReps?: number;
 
