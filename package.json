@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "main": "bot/index.ts",
   "scripts": {
-    "build": "tsc --project tsconfig.bot.json",
+    "build": "tsc",
     "start": "node dist/bot.js",
-    "dev": "ts-node --project tsconfig.bot.json src/bot.ts"
+    "dev": "ts-node src/bot.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.1",
+    "express": "^5.1.0",
     "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.3",
     "@types/node": "^16.18.126",
     "@types/node-telegram-bot-api": "^0.64.10",
     "ts-node": "^10.9.2",

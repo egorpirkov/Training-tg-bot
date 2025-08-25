@@ -6,6 +6,11 @@ import { callbackHandler } from './handlers/callbackHandler';
 import { messageHandler } from './handlers/messageHandler';
 import { resetUserData, getUserData, setUserData } from './handlers/userData';
 import { startProgramCreation } from './utils/programCreation';
+import express from 'express';
+const app = express();
+app.get('/', (req, res) => res.send('Bot is alive 🚀'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server is alive on port ${PORT}`));
 
 config();
 

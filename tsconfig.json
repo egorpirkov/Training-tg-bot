@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "target": "ES2020",
+    "module": "CommonJS",
+    "lib": ["ES2020"],
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -10,11 +10,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
     "rootDir": "./src",
-    "outDir": "./dist",
-    
+    "outDir": "./dist"
   },
-  "include": ["src", "bot"]
+  "include": ["src"]
 }
