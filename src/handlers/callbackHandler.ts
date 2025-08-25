@@ -16,7 +16,7 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
       age: undefined, 
       gender: undefined 
     });
-    await bot.sendMessage(chatId, '💪 Введи свой вес тела (в кг):');
+    await bot.sendMessage(chatId, '💪 Введи свой возраст:');
     return;
   }
 

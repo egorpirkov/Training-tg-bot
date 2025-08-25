@@ -13,46 +13,39 @@ export const PullUp = async (bot: TelegramBot, msg: Message) => {
     if (!isNaN(pullUps) && pullUps >= 0) {
       setUserData(chatId, { PullUp: pullUps });
 
-      const age = userData.age || 25; // значение по умолчанию
-      const weight = userData.weight || 70; // значение по умолчанию
-
-      const weightFactor = weight / 70;
-      const threshold = (base: number) => Math.round(base * weightFactor);
+      const age = userData.age || 25;
+      const weight = userData.weight || 70;
+      const gender = userData.gender || 'male';
 
       let evaluation = '';
 
       if (age >= 12 && age <= 14) {
-        if (pullUps >= threshold(10)) evaluation = '🔥 Отличный результат для твоего возраста и веса!';
-        else if (pullUps >= threshold(6)) evaluation = 'Неплохо, но можно лучше!';
-        else evaluation = 'Есть куда расти — тренируйся усерднее!';
+        if (pullUps >= 30) evaluation = '💥 Ебать, ты монстр нахуй! 🚀';
+        else if (pullUps >= 20 && weight > 100) evaluation = '🔥 Андрей Смаев, ты ли это?! 💪';
+        else if (pullUps >= 20) evaluation = '💪 Ты реально крепкий, кайф!';
+        else evaluation = '👌 Норм, но не расслабляйся, есть куда расти.';
       } else if (age >= 15 && age <= 17) {
-        if (pullUps >= threshold(12)) evaluation = '🔥 Ты в хорошей форме для своего возраста и веса!';
-        else if (pullUps >= threshold(7)) evaluation = 'Средний уровень, продолжай работать!';
-        else evaluation = 'Продолжай тренироваться, и будет лучше!';
+        if (pullUps >= 40 && weight <= 60) evaluation = '🚛💨 чеза камаз, вай биля!'; 
+        else if (pullUps >= 25 && weight > 100) evaluation = '🔥 Тяжелый, но мощный как легкий! 💪';
+        else if (pullUps >= 25) evaluation = '💪 Крепкий юнец, держи тунец!';
+        else evaluation = '🤏 Ай тигр, дальше меньше.';
       } else if (age >= 18 && age <= 25) {
-        if (pullUps >= threshold(15)) evaluation = '🔥 Отличный уровень силы!';
-        else if (pullUps >= threshold(10)) evaluation = 'Хороший результат, двигайся дальше!';
-        else evaluation = 'Есть над чем работать — не сдавайся!';
-      } else if (age >= 26 && age <= 35) {
-        if (pullUps >= threshold(12)) evaluation = '🔥 Хороший показатель для твоего возраста и веса!';
-        else if (pullUps >= threshold(8)) evaluation = 'Средний уровень, продолжай тренироваться!';
-        else evaluation = 'Не останавливайся, тренируйся чаще!';
-      } else if (age >= 36 && age <= 50) {
-        if (pullUps >= threshold(8)) evaluation = '🔥 Молодец, отличная форма!';
-        else if (pullUps >= threshold(5)) evaluation = 'Средний уровень — поддерживай себя в форме!';
-        else evaluation = 'Работай над собой, все получится!';
-      } else if (age > 50) {
-        if (pullUps >= threshold(5)) evaluation = '🔥 Прекрасный результат!';
-        else if (pullUps >= threshold(3)) evaluation = 'Неплохо, продолжай в том же духе!';
-        else evaluation = 'Время тренироваться, ты сможешь!';
-      } else {
-        evaluation = 'Главное — тренироваться!';
+        if (pullUps >= 50 && weight <= 70) evaluation = 'Базару нет, ты мощь брат! 💥';
+        else if (pullUps >= 30 && weight > 100) evaluation = '🔥 Андрей Смаев своего рода!';
+        else if (pullUps >= 20) evaluation = '💪 Молодец, сила присуствует!';
+        else evaluation = '😅 Базар нет, ты немощь брат!';
+      } else if (age > 25) {
+        if (pullUps >= 40 && weight <= 70) evaluation = '💥 чеза Брюс Ли, на, хорош!';
+        else if (pullUps >= 25 && weight > 100) evaluation = '🚛 Тяжеловес, ты внебрачный сын Смаева?';
+        else if (pullUps >= 15) evaluation = '💪 Ну и монстр!';
+        else evaluation = '😅 Средне, нельзя тут оставаться, двигайся в том же темпе браток.';
       }
 
+      if (gender === 'female') evaluation += 'Довольно сильна для девочки, держи корону 👑!';
+
       await bot.sendMessage(chatId, evaluation);
-      await bot.sendMessage(chatId, 'Спасибо! Все данные получены.');
-      
-      // Сбрасываем режим оценки
+      await bot.sendMessage(chatId, 'Спасибо! Все данные получены.Что-то еще?');
+
       setUserData(chatId, { ratingMode: false, ratingExercise: undefined });
     } else {
       await bot.sendMessage(chatId, 'Пожалуйста, введи корректное число подтягиваний.');
