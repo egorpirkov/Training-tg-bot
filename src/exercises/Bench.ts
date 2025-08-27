@@ -1,5 +1,5 @@
 import TelegramBot, { Message } from "node-telegram-bot-api";
-import { setUserData, getUserData } from "../handlers/userData";
+import { setUserData, getUserData } from '../types/UserData'
 
 export const Bench = (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;

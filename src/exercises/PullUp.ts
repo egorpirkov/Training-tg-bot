@@ -1,5 +1,5 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
-import { getUserData, setUserData } from '../handlers/userData';
+import { getUserData, setUserData } from '../types/UserData'
 
 export const PullUp = async (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;

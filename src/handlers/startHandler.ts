@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { resetUserData } from './userData';
+import { resetUserData } from '../types/UserData';
 
 export const startHandler = (bot: TelegramBot, chatId: number) => {
   resetUserData(chatId);

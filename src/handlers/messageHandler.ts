@@ -1,5 +1,5 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
-import { getUserData, setUserData } from './userData';
+import { getUserData, setUserData } from '../types/UserData'
 import { trainingMemory } from './trainingMemory';
 import { calculateWeights } from '../utils/calculateWeight';
 import { parseTrainingText, textLooksLikeProgram } from '../utils/parseTrainingText';

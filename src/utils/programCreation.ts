@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { getUserData, setUserData } from '../handlers/userData';
+import { getUserData, setUserData } from '../types/UserData'
 import { UserProgramData, DayConfig, ProgramConfig } from '../types/training';
 
 

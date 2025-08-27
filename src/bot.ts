@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 import { startHandler } from './handlers/startHandler';
 import { callbackHandler } from './handlers/callbackHandler';
 import { messageHandler } from './handlers/messageHandler';
-import { resetUserData, getUserData, setUserData } from './handlers/userData';
+import { resetUserData, getUserData, setUserData } from './types/UserData'
 import { startProgramCreation } from './utils/programCreation';
 import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
 import express from 'express';
