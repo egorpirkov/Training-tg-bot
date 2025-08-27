@@ -9,14 +9,24 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
   // --- Выбор упражнения ---
   if (data === 'rate_bench') {
     setUserData(chatId, { 
-      ratingExercise: 'bench', 
+      ratingExercise: 'dips', 
       ratingMode: true, 
       BS: undefined, 
       weight: undefined, 
       age: undefined, 
       gender: undefined 
     });
-    await bot.sendMessage(chatId, '💪 Введи свой возраст:');
+    
+    await bot.sendMessage(chatId, '👤 Укажи свой пол:', {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: ' Мужчина', callback_data: 'gender_male_bench' },
+            { text: ' Женщина', callback_data: 'gender_female_bench' }
+          ]
+        ]
+      }
+    });
     return;
   }
 
@@ -73,7 +83,7 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
     setUserData(chatId, { gender });
     
     await bot.sendMessage(chatId, `✅ Пол установлен: ${gender === 'male' ? 'Мужчина' : 'Женщина'}`);
-    await bot.sendMessage(chatId, '📅 Введи свой возраст:');
+    await bot.sendMessage(chatId, ' Введи свой возраст:');
     return;
   }
 
@@ -82,7 +92,16 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
     setUserData(chatId, { gender });
     
     await bot.sendMessage(chatId, `✅ Пол установлен: ${gender === 'male' ? 'Мужчина' : 'Женщина'}`);
-    await bot.sendMessage(chatId, '📅 Введи свой возраст:');
+    await bot.sendMessage(chatId, ' Введи свой возраст:');
+    return;
+  }
+
+  if (data === 'gender_male_bench' || data === 'gender_female_bench') {
+    const gender = data.includes('male') ? 'male' : 'female';
+    setUserData(chatId, { gender });
+    
+    await bot.sendMessage(chatId, `✅ Пол установлен: ${gender === 'male' ? 'Мужчина' : 'Женщина'}`);
+    await bot.sendMessage(chatId, ' Введи свой возраст:');
     return;
   }
 

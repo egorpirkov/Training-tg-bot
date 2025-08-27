@@ -37,7 +37,7 @@ export const Bench = (bot: TelegramBot, msg: Message) => {
         if (BS >= weight * 2) evaluation = ' Чеза КамАЗ в зале! 💪';
         else if (BS >= weight * 1.5) evaluation = '🔥 Сильный юнец, держи тунец';
         else if (BS >= weight * 1.2) evaluation = '💪 Нормально, держи темп!';
-        else evaluation = '🤏 Так себе, тут не стоит оставаться...!';
+        else evaluation = '🤏 Так себе, тут не стоит оставаться...';
       } else if (age >= 18 && age <= 25) {
         if (BS >= weight * 2.5) evaluation = '💥Супермен чисто!';
         else if (BS >= weight * 2) evaluation = '🔥 трактор жимовойы, силен!';

@@ -6,6 +6,7 @@ import { callbackHandler } from './handlers/callbackHandler';
 import { messageHandler } from './handlers/messageHandler';
 import { resetUserData, getUserData, setUserData } from './handlers/userData';
 import { startProgramCreation } from './utils/programCreation';
+import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
 import express from 'express';
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive 🚀'));
@@ -72,6 +73,12 @@ bot.on('message', (msg) => {
   if (msg.text && !msg.text.startsWith('/')) {
     messageHandler(bot, msg);
   }
+});
+
+//рандом эдит
+bot.onText(/\/sendvideo/, (msg) => {
+  const chatId = msg.chat.id;
+  sendRandomVideo(bot, chatId);
 });
 
 console.log('Бот запущен…');
