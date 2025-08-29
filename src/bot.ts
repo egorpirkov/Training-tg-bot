@@ -7,6 +7,7 @@ import { messageHandler } from './handlers/messageHandler';
 import { resetUserData, getUserData, setUserData } from './types/UserData'
 import { startProgramCreation } from './utils/programCreation';
 import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
+import { getVideoHandler } from './EditedVideos/getEditedVideos/getVideo';
 import express from 'express';
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive 🚀'));
@@ -50,6 +51,11 @@ bot.onText(/\/rateexercise/, (msg) => {
   });
 });
 
+
+
+
+
+
 // /trainingplan
 bot.onText(/\/trainingplan/, (msg) => {
   bot.sendMessage(msg.chat.id,
@@ -80,5 +86,8 @@ bot.onText(/\/sendvideo/, (msg) => {
   const chatId = msg.chat.id;
   sendRandomVideo(bot, chatId);
 });
+
+//получение эдита 
+getVideoHandler(bot);
 
 console.log('Бот запущен…');
