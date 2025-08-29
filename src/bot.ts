@@ -22,6 +22,18 @@ if (!token) throw new Error('BOT_TOKEN не найден в .env');
 
 const bot = new TelegramBot(token, { polling: true });
 
+bot.setMyCommands([
+  { command: 'start', description: 'Запуск бота' },
+  { command: 'help', description: 'ответы на вопросы' },
+  { command: 'createprogram', description: 'Создать тренировочную программу' },
+  { command: 'rateexercise', description: 'Оценить силовые показатели(подтягивание,брусья и тд)' },
+  { command: 'trainingplan', description: 'Ввести готовую программу(в разработке)' },
+  { command: 'sendvideo', description: 'Получить случайный эдит' },
+  { command: 'sendedit', description: 'Отправить свой эдит админу' },
+]);
+
+
+
 // /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
