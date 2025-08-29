@@ -2,13 +2,14 @@ import TelegramBot from 'node-telegram-bot-api';
 import { config } from 'dotenv';
 
 import { startHandler } from './handlers/startHandler';
-import { callbackHandler } from './handlers/callbackHandler';
+import { callbackHandler, callBackHandlerOfHelp } from './handlers/callbackHandler';
 import { messageHandler } from './handlers/messageHandler';
 import { resetUserData, getUserData, setUserData } from './types/UserData'
 import { startProgramCreation } from './utils/programCreation';
 import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
 import { getVideoHandler } from './EditedVideos/getEditedVideos/getVideo';
 import express from 'express';
+import { helpHandler } from './handlers/helpHandler';
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive 🚀'));
 const PORT = process.env.PORT || 3000;
@@ -86,6 +87,16 @@ bot.onText(/\/sendvideo/, (msg) => {
   const chatId = msg.chat.id;
   sendRandomVideo(bot, chatId);
 });
+
+//help
+bot.onText(/\/help/, (msg) => {
+  const chatId = msg.chat.id;
+  helpHandler(bot, chatId);
+})
+
+bot.on('callback_query', (query) => {
+  callBackHandlerOfHelp(bot, query);
+})
 
 //получение эдита 
 getVideoHandler(bot);

@@ -36,6 +36,6 @@ export function sendRandomVideo(bot: TelegramBot, chatId: number) {
   const total = files.length;
 
   bot.sendVideo(chatId, videoPath, {
-    caption: `(скоро добавлю еще)📹Осталось эдитов ${current}/${total}`
+    caption: `📹Осталось эдитов ${current}/${total}`
   });
 }
