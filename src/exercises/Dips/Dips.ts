@@ -2,7 +2,8 @@ import TelegramBot, { Message } from "node-telegram-bot-api";
 import { setUserData, getUserData } from '../../types/UserData';
 import { dipsRules, femaleDipsVariants, DipsRules } from './dipsRules';
 
-export const Dips = (bot: TelegramBot, msg: Message) => {
+// Добавь async к функции
+export const Dips = async (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;
   const text = msg.text?.trim();
   if (!text) return;
@@ -42,7 +43,7 @@ export const Dips = (bot: TelegramBot, msg: Message) => {
           matches = false;
         }
 
-        // Проверка множителя веса (если нужно будет добавить)
+        // Проверка множителя веса
         if (rule.dipsMultiplier && !(dips >= weight * rule.dipsMultiplier)) {
           matches = false;
         }
@@ -63,10 +64,11 @@ export const Dips = (bot: TelegramBot, msg: Message) => {
         evaluation += ' ' + getRandom(femaleDipsVariants);
       }
 
-      bot.sendMessage(chatId, evaluation);
-      bot.sendMessage(chatId, 'Спасибо! Все данные по брусьям получены.');
+      // Добавь await к отправке сообщений
+      await bot.sendMessage(chatId, evaluation);
+      await bot.sendMessage(chatId, 'Спасибо! Все данные по брусьям получены.');
     } else {
-      bot.sendMessage(chatId, 'Пожалуйста, введи корректное количество отжиманий на брусьях.');
+      await bot.sendMessage(chatId, 'Пожалуйста, введи корректное количество отжиманий на брусьях.');
     }
   }
 };
