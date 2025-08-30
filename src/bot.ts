@@ -64,11 +64,6 @@ bot.onText(/\/rateexercise/, (msg) => {
   });
 });
 
-
-
-
-
-
 // /trainingplan
 bot.onText(/\/trainingplan/, (msg) => {
   bot.sendMessage(msg.chat.id,

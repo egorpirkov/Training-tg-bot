@@ -13,6 +13,7 @@ export interface TrainingMemory {
   schedule?: TrainingSchedule;
   maxWeight?: number;
   timestamp?: number;
+  arr?: any[];
 }
 
 // Конфиг дня

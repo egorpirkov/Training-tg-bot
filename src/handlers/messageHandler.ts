@@ -4,9 +4,9 @@ import { trainingMemory } from './trainingMemory';
 import { calculateWeights } from '../utils/calculateWeight';
 import { parseTrainingText, textLooksLikeProgram } from '../utils/parseTrainingText';
 import { handleProgramCreationMessage } from '../utils/programCreation';
-import { Bench } from '../exercises/Bench';
-import { PullUp } from '../exercises/PullUp';
-import { Dips } from '../exercises/Dips';
+import { Bench } from '../exercises/Bench/Bench';
+import { PullUp } from '../exercises/Pull-Ups/PullUp';
+import { Dips } from '../exercises/Dips/Dips';
 
 export const messageHandler = async (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;
