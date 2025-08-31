@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Путь к папке с видео
-const videosDir = path.join(__dirname, ".."); // src/EditedVideos
+const videosDir = path.join(__dirname); // src/EditedVideos
 let usedIndexes: number[] = [];
 
 // Функция для отправки случайного видео
@@ -13,7 +13,7 @@ export function sendRandomVideo(bot: TelegramBot, chatId: number) {
   );
 
   if (files.length === 0) {
-    bot.sendMessage(chatId, "❌ В папке не осталось видео.");
+    bot.sendMessage(chatId, "❌ В папке не .");
     return;
   }
 
