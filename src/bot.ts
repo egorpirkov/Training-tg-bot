@@ -1,3 +1,4 @@
+process.env.NTBA_FIX_319 = "1";
 import TelegramBot from 'node-telegram-bot-api';
 import { config } from 'dotenv';
 
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server is alive on port ${PORT}`));
 
 config();
+
 
 const token = process.env.BOT_TOKEN;
 if (!token) throw new Error('BOT_TOKEN не найден в .env');

@@ -1,7 +1,7 @@
 {
   "name": "kachbot",
   "version": "1.0.0",
-  "main": "bot/index.ts",
+  "main": "bot/bot.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/bot.js",
