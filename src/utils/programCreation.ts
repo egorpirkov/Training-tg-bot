@@ -7,7 +7,7 @@ function generateProgramText(programData: UserProgramData) {
   const { weeks, maxWeight } = programData;
   if (!weeks || !maxWeight) return "Нет данных для программы.";
 
-  let resp = `🏋‍♂ *Вот программа тренировок в соответствии с твоим*\n_1ПМ = ${maxWeight} кг_\n\n`;
+  let resp = `🏋‍♂Вот программа тренировок в соответствии с твоим\n_1ПМ = ${maxWeight} кг_\n\n`;
 
   weeks.forEach((week, wi) => {
     resp += `📅 *Неделя ${wi + 1}*\n`;
@@ -118,7 +118,7 @@ export async function handleProgramCreationMessage(
         const [dayInput, pctStr, setsRepsStr] = parts;
         const dayNorm = normDay(dayInput);
         if (!days.includes(dayNorm)) {
-          await bot.sendMessage(chatId, `Неизвестный день: ${dayInput}`);
+          await bot.sendMessage(chatId, `Неизвестный день,может вы имели ввиду вт,ср,чт?: ${dayInput}`);
           return;
         }
 
@@ -184,7 +184,7 @@ export async function handleProgramCreationMessage(
     case 'addWeek': {
       if (text.toLowerCase().startsWith('д')) {
         setUserData(chatId, { currentStep: 'days' });
-        await bot.sendMessage(chatId, '📅 Введи дни для следующей недели:');
+        await bot.sendMessage(chatId, '📅 Введи дни для следующей недели(пн,ср,пт или вт,чт,сб):');
       } else {
         await bot.sendMessage(chatId, '✅Отлично,Программа завершена!');
         setUserData(chatId, { currentStep: undefined });
