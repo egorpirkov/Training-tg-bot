@@ -15,15 +15,15 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
 
   const userData = getUserData(chatId);
 
-  // 0) Пошаговый мастер программы
+  
   if (userData.currentStep) {
     await handleProgramCreationMessage(bot, chatId, text);
     return;
   }
 
-  // 1) Режим оценки упражнений
+  //Режим оценки упражнений
   if (userData.ratingMode) {
-    // Обработка возраста
+    //Обработка возраста
     if (!userData.age) {
       const age = parseInt(text, 10);
       if (!isNaN(age) && age > 0 && age < 120) {
@@ -75,5 +75,5 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
     }
   }
 
-  // ... остальной код без изменений
+
 };
