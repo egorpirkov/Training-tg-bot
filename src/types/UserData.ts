@@ -12,15 +12,19 @@ export const getUserData = (chatId: number): UserData => {
 export const setUserData = (chatId: number, data: Partial<UserData>) => {
   const current = getUserData(chatId);
   userDataMap.set(chatId, { 
-    ...current, 
-    ...data, 
-    timestamp: Date.now() 
-  } as UserData);
+    ...current, // берутся прошлые данные
+    ...data, // накладывается новые
+    timestamp: Date.now()  // фиксируем типо когда последний раз обновляли
+  } as UserData); //type assertion
 };
+// это функция говорит,возьми существующие данные юзера по chatId,
+// обнови их новыми значениями и сохрани обратно,
+// при этом пометь время изменении
 
 export const resetUserData = (chatId: number) => {
   userDataMap.delete(chatId);
 };
+//сброс данных юзера
 
 // автоочистка 24ч
 setInterval(() => {

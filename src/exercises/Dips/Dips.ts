@@ -54,7 +54,7 @@ export const Dips = async (bot: TelegramBot, msg: Message) => {
         }
       }
 
-      // Если правило не найдено, используем дефолтное
+      // Если правило не найдено, используем дефолтик
       if (!evaluation) {
         evaluation = '💪 Хороший результат на брусьях! Продолжай тренироваться!';
       }
@@ -64,7 +64,7 @@ export const Dips = async (bot: TelegramBot, msg: Message) => {
         evaluation += ' ' + getRandom(femaleDipsVariants);
       }
 
-      // Добавь await к отправке сообщений
+    
       await bot.sendMessage(chatId, evaluation);
       await bot.sendMessage(chatId, 'Спасибо! Все данные по брусьям получены.');
     } else {

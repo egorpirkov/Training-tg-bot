@@ -8,7 +8,7 @@ export const Bench = (bot: TelegramBot, msg: Message) => {
   const text = msg.text?.trim();
   if (!text) return;
 
-  const userData = getUserData(chatId);
+  const userData = getUserData(chatId); 
 
   if (userData.BS === undefined) {
     const BS = parseFloat(text);
@@ -54,7 +54,7 @@ export const Bench = (bot: TelegramBot, msg: Message) => {
         }
       }
 
-      // Если правило не найдено, используем дефолтное
+      // Если правило не найдено, используем костыльы
       if (!evaluation) {
         evaluation = '💪 Хороший результат! Продолжай тренироваться!';
       }

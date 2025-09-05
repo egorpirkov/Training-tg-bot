@@ -2,9 +2,9 @@ import TelegramBot from "node-telegram-bot-api";
 import { getUserData, setUserData } from "../types/UserData";
 import { UserProgramData, DayConfig, ProgramConfig, repMaxTable } from "../types/training";
 
-// Функция для преобразования ПМ в проценты
+// Функция для преобразования ПМ в проценты то есть 6ПМ это 85%
 function pmToPercentage(pm: number): number {
-  return repMaxTable[pm] || 85; // по умолчанию 85% если ПМ не найден в таблице
+  return repMaxTable[pm] || 85; 
 }
 
 // Генерация текста программы для вывода пользователю
@@ -14,23 +14,23 @@ function generateProgramText(programData: UserProgramData) {
     return "❌ Нет данных для программы.";
   }
 
-  let resp = `💪 *ТВОЯ ПРОГРАММА ТРЕНИРОВОК* 💪\n`;
+  let resp = `💪 *ТВОЯ ПРОГРАММА ТРЕНИРОВОК на основе твоего плана* 💪\n`;
   resp += `🔸 *1ПМ: ${maxWeight} кг*\n\n`;
 
   weeks.forEach((week, wi) => {
     resp += `📅 *НЕДЕЛЯ ${wi + 1}*\n`;
-    resp += `╔═══════════════════════\n`;
 
     for (const [day, configs] of Object.entries(week)) {
-      resp += `║ *${day.toUpperCase()}*\n`;
-      configs.forEach((cfg, index) => {
+      resp += `*${day.toUpperCase()}*\n`;
+
+      configs.forEach((cfg, index) => {// sfg это конфиг упражнения(pm:5,sets:2,reps:8)
         let percentage: number;
         let description = '';
 
         if (cfg.percentage) {
           percentage = cfg.percentage;
           description = `${cfg.percentage}%`;
-        } else if (cfg.pm) {
+        } else if (cfg.pm) { // если есть кол-во повторов до отказа,переводим через pmToPercentage,типо pm=5 > 87%
           percentage = pmToPercentage(cfg.pm);
           description = `ПМ${cfg.pm}`;
         } else {
@@ -39,11 +39,10 @@ function generateProgramText(programData: UserProgramData) {
         }
 
         const weightKg = Math.round((percentage / 100) * maxWeight);
-        resp += `║   ${index + 1}. ${weightKg} кг (${description}) — ${cfg.sets}×${cfg.reps}\n`;
+        resp += `  ${index + 1}. ${weightKg} кг (${description}) — ${cfg.sets}×${cfg.reps}\n`;
       });
-      resp += `║\n`;
+      resp += `\n`;
     }
-    resp += `╚═══════════════════════\n\n`;
   });
 
   return resp;
@@ -136,9 +135,9 @@ export async function handleProgramCreationMessage(
       const configs: DayConfig[] = [];
 
       for (const line of lines) {
-        // Поддерживаем оба варианта: латинскую x и символ ×
+        // х или латинский х
 
-        // Формат: 6ПМ 3x5 или 6ПМ 3×5
+        // Формат 6ПМ 3x5 или 6ПМ 3×5
         let m = line.match(/(\d+)\s*пм\s+(\d+)[x×](\d+)/i);
         if (m) {
           configs.push({
@@ -195,7 +194,7 @@ export async function handleProgramCreationMessage(
           { parse_mode: "Markdown" }
         );
         return;
-      }
+      }//здесь если пользователь ввел дни которые не соответсвуют заданным им же днями
 
       // Проверяем, что количество конфигов совпадает с количеством дней
       if (u.tempDays && configs.length !== u.tempDays.length) {
@@ -350,7 +349,7 @@ export async function handleProgramCreationMessage(
           if (u.tempDayConfigs && u.tempDayConfigs[index]) {
             weekConfig[day] = [u.tempDayConfigs[index]];
           }
-        });
+        });//создание готового конфига недели
       }
 
       pd.weeks.push(weekConfig);
@@ -391,7 +390,7 @@ export async function handleProgramCreationMessage(
         await bot.sendMessage(
           chatId,
           "🎉 *ПРОГРАММА СОЗДАНА!*\n\n" +
-          "💪 *Удачи в тренировках!*",
+          "💪 *Удачи в тренировках родной!*",
           { parse_mode: "Markdown" }
         );
       }

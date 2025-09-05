@@ -1,15 +1,12 @@
 import { TrainingSchedule } from "../types/training";
 
-/**
- * Поддерживаем:
- *  - "Пн: 70% 4x2"
- *  - "Ср: 75% 4x2"
- *  - "Жим: 60кг 3x5"
- * НЕ считаем строку, где только день, за полноценный день без подходов.
- */
 export function parseTrainingText(raw: string): TrainingSchedule | null {
-  const text = raw.replace(/\r/g, '\n');
+  const text = raw.replace(/\r/g, '\n'); //хз,гибкая настройка,чтобы текст работал на разных платформах
   const lines = text.split('\n').map(s => s.trim()).filter(Boolean);
+  // 70% 3x5    
+  // 80% 2x3   ->> // ["70% 3x5", "80% 2x3"]
+
+
 
   const schedule: TrainingSchedule = {};
   let currentDay: string | null = null;
@@ -17,23 +14,25 @@ export function parseTrainingText(raw: string): TrainingSchedule | null {
   const dayPattern = /^(пн|пон|вт|вто|ср|сре|чт|чет|пт|пят|сб|суб|вс|вос)\b/iu;
   const percentPattern = /(\d+)\s*%\s*(\d+)\s*[xх]\s*(\d+)/i;
   const classicPattern = /(\d+(?:[.,]\d+)?)\s*[xх]\s*(\d+)/i;
+  //1.70% 3x5
+  //2. 100x5 12.5x8 12.5x8
+
 
   for (const line of lines) {
-    
+
     if (dayPattern.test(line.toLowerCase())) {
       currentDay = line.replace(/:$/, '');
       continue;
     }
 
-    // если нет текущего дня — используем "Тренировка"
     if (!currentDay) currentDay = 'Тренировка';
 
-    // пытаемся разобрать проценты
+    // разбираем проценты
     const p = percentPattern.exec(line);
     if (p) {
-      const pct = parseFloat(p[1]) / 100;
-      const sets = parseInt(p[2], 10);
-      const reps = parseInt(p[3], 10);
+      const pct = parseFloat(p[1]) / 100;// проценты в долю
+      const sets = parseInt(p[2], 10); // подходы
+      const reps = parseInt(p[3], 10);// повторы
       if (!schedule[currentDay]) schedule[currentDay] = [];
       for (let i = 0; i < sets; i++) {
         schedule[currentDay].push({ weight: pct, reps });
@@ -59,7 +58,7 @@ export function parseTrainingText(raw: string): TrainingSchedule | null {
   return Object.keys(schedule).length ? schedule : null;
 }
 
-/** Грубая проверка, что текст похож на программу, а не просто список дней */
+// Грубая проверкa
 export function textLooksLikeProgram(text: string): boolean {
   const hasPercentBlocks = /(\d+)\s*%\s*(\d+)\s*[xх]\s*(\d+)/i.test(text);
   const hasClassicBlocks = /(\d+(?:[.,]\d+)?)\s*[xх]\s*(\d+)/i.test(text);
