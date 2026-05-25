@@ -1,6 +1,7 @@
 process.env.NTBA_FIX_319 = "1";
 import TelegramBot from 'node-telegram-bot-api';
 import { config } from 'dotenv';
+config();
 
 import { startHandler } from './handlers/startHandler';
 import { callbackHandler, callBackHandlerOfHelp } from './handlers/callbackHandler';
@@ -16,7 +17,7 @@ app.get('/', (req, res) => res.send('Bot is alive 🚀'));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server is alive on port ${PORT}`));
 
-config();
+
 
 
 const token = process.env.BOT_TOKEN;
@@ -101,10 +102,6 @@ bot.onText(/\/sendvideo/, (msg) => {
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
   helpHandler(bot, chatId);
-})
-
-bot.on('callback_query', (query) => {
-  callBackHandlerOfHelp(bot, query);
 })
 
 //получение эдита 

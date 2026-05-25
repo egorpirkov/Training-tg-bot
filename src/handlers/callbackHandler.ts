@@ -6,7 +6,6 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
   const data = query.data;
   if (!chatId || !data) return;
 
-  // --- Выбор упражнения ---
   if (data === 'rate_bench') {
     setUserData(chatId, {
       ratingExercise: 'bench',
@@ -40,7 +39,6 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
       gender: undefined
     });
 
-    // Сразу запрашиваем все необходимые данные
     await bot.sendMessage(chatId, '👤 Укажи свой пол:', {
       reply_markup: {
         inline_keyboard: [
@@ -77,7 +75,6 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
     return;
   }
 
-  // --- Выбор пола для подтягиваний ---
   if (data === 'gender_male_pullups' || data === 'gender_female_pullups') {
     const gender = data.startsWith('gender_male') ? 'male' : 'female';
     setUserData(chatId, { gender });
@@ -107,7 +104,6 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
 
 
 
-  // --- Выбор пола для жима (если нужно) ---
   if (data === 'gender_male') {
     setUserData(chatId, { gender: 'male' });
     await bot.sendMessage(chatId, '✅ Пол установлен: Мужчина. Теперь введи свой вес тела (в кг):');
@@ -119,9 +115,10 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
     await bot.sendMessage(chatId, '✅ Пол установлен: Женщина. Теперь введи свой вес тела (в кг):');
     return;
   }
+
+  callBackHandlerOfHelp(bot, query);
 };
 
-// --- Эхо чат для помощи из help.ts --- //
 
 export const callBackHandlerOfHelp = (bot: TelegramBot, query: TelegramBot.CallbackQuery) => {
   const chatId = query.message?.chat.id;

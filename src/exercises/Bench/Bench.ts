@@ -1,9 +1,8 @@
 import TelegramBot, { Message } from "node-telegram-bot-api";
 import { setUserData, getUserData } from '../../types/UserData';
 import { benchRules, femaleBenchVariants } from './benchRules';
-import { BenchRules } from "./benchRules";
 
-export const Bench = (bot: TelegramBot, msg: Message) => {
+export const Bench = async (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;
   const text = msg.text?.trim();
   if (!text) return;
@@ -12,11 +11,14 @@ export const Bench = (bot: TelegramBot, msg: Message) => {
 
   if (userData.BS === undefined) {
     const BS = parseFloat(text);
+    
     if (!isNaN(BS) && BS > 0) {
+      const weight = userData.weight || 70;
+
+      // Сохраняем временное значение жима для сессии
       setUserData(chatId, { BS });
 
       const age = userData.age ?? 25;
-      const weight = userData.weight ?? 70;
       const gender = userData.gender ?? 'male';
 
       function getRandom(arr: string[]) {
@@ -54,20 +56,27 @@ export const Bench = (bot: TelegramBot, msg: Message) => {
         }
       }
 
-      // Если правило не найдено, используем костыльы
+      // Если правило не найдено, используем дефолт
       if (!evaluation) {
-        evaluation = '💪 Хороший результат! Продолжай тренироваться!';
+        evaluation = 'Хороший результат! Продолжай тренироваться!';
       }
 
       // Женский вариант
       if (gender === 'female') {
-        evaluation += ' ' + getRandom(femaleBenchVariants);
+        evaluation += ' ' + getRandom(femaleBenchVariants).trim();
       }
 
-      bot.sendMessage(chatId, evaluation);
-      bot.sendMessage(chatId, 'Спасибо! Все данные получены.');
+      await bot.sendMessage(chatId, evaluation);
+      await bot.sendMessage(chatId, 'Спасибо! Все данные получены.');
+
+      // Полностью очищаем стейт после завершения оценки
+      setUserData(chatId, { 
+        ratingMode: false, 
+        ratingExercise: undefined, 
+        BS: undefined // Сброс жима для будущих тестов
+      });
     } else {
-      bot.sendMessage(chatId, 'Пожалуйста, введи корректный жим (в кг).');
+      await bot.sendMessage(chatId, 'Пожалуйста, введи корректный жим (в кг).');
     }
   }
 };

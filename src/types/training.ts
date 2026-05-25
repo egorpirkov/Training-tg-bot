@@ -23,7 +23,7 @@ export interface DayConfig {
   sets: number;
   reps: number;
   percentage?: number; // % от 1ПМ типо 85%
-  pm?: number;   // повторный максимум (например 6ПМ,2ПМ и тд)
+  pm?: number;   // повторный максимум например: 6ПМ,2ПМ и тд
 }
 
 // Конфиг недели: день - список конфигов
@@ -57,6 +57,7 @@ export interface UserData {
   BS?: number; // жим
   PullUp?: number;
   PushUp?: number;
+  Dips?: number;
 
   // Режим оценки упражнений юсера
   ratingMode?: boolean;

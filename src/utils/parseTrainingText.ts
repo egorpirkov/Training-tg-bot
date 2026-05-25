@@ -4,7 +4,7 @@ export function parseTrainingText(raw: string): TrainingSchedule | null {
   const text = raw.replace(/\r/g, '\n'); //хз,гибкая настройка,чтобы текст работал на разных платформах
   const lines = text.split('\n').map(s => s.trim()).filter(Boolean);
   // 70% 3x5    
-  // 80% 2x3   ->> // ["70% 3x5", "80% 2x3"]
+  // 80% 2x3 -> // ["70% 3x5", "80% 2x3"]
 
 
 

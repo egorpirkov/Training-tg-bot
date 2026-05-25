@@ -44,7 +44,7 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
     // Обработка веса
     if (!userData.weight) {
       const weight = parseFloat(text.replace(',', '.'));
-      if (!isNaN(weight) && weight > 0) {
+      if (!isNaN(weight) && weight >= 30 && weight <= 150) {
         setUserData(chatId, { weight });
         
         if (userData.ratingExercise === 'bench') {
@@ -56,7 +56,7 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
         }
         return;
       } else {
-        await bot.sendMessage(chatId, 'Пожалуйста, введи корректный вес (положительное число).');
+        await bot.sendMessage(chatId, 'Пожалуйста, введи реальный вес тела (число от 30 до 150 кг).');
         return;
       }
     }

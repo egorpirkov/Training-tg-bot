@@ -120,7 +120,7 @@ export async function handleProgramCreationMessage(
         chatId,
         "📝 *Теперь укажи нагрузки для каждого дня:*\n\n" +
         "💡 *Какой ПМ указан в твоей программе?(6ПМ,2ПМ)*\n" +
-        "▫️ Примеры форматов:\n" +
+        "▫️ Примеры форматов тренировок:\n" +
         "   - 6ПМ 3×5 (для 6ПМ)\n" +
         "   - 80% 4×3 (для процентов)\n" +
         "   - 5ПМ ×8 (один подход)\n\n" +
@@ -137,7 +137,7 @@ export async function handleProgramCreationMessage(
       for (const line of lines) {
         // х или латинский х
 
-        // Формат 6ПМ 3x5 или 6ПМ 3×5
+        // 6ПМ 3x5 или 6ПМ 3×5
         let m = line.match(/(\d+)\s*пм\s+(\d+)[x×](\d+)/i);
         if (m) {
           configs.push({
@@ -148,7 +148,7 @@ export async function handleProgramCreationMessage(
           continue;
         }
 
-        // Формат: 80% 3x5 или 80% 3×5
+        //  80% 3x5 или 80% 3×5
         m = line.match(/(\d+)\s*%\s+(\d+)[x×](\d+)/i);
         if (m) {
           configs.push({
@@ -159,7 +159,7 @@ export async function handleProgramCreationMessage(
           continue;
         }
 
-        // Формат: 6ПМ x5 или 6ПМ ×5
+        //  6ПМ x5 или 6ПМ ×5
         m = line.match(/(\d+)\s*пм\s*[x×]\s*(\d+)/i);
         if (m) {
           configs.push({
@@ -170,7 +170,7 @@ export async function handleProgramCreationMessage(
           continue;
         }
 
-        // Формат: 70% x5 или 70% ×5
+        //  70% x5 или 70% ×5
         m = line.match(/(\d+)\s*%\s*[x×]\s*(\d+)/i);
         if (m) {
           configs.push({
@@ -185,7 +185,7 @@ export async function handleProgramCreationMessage(
       if (!configs.length) {
         await bot.sendMessage(
           chatId,
-          "❌ *Не понял формат*\n\n" +
+          "❌ *Не понял \n\n" +
           "💡 *Примеры:*\n" +
           "▫️ 6ПМ 3×5\n" +
           "▫️ 80% 4×3\n" +
@@ -235,7 +235,7 @@ export async function handleProgramCreationMessage(
       for (const line of lines) {
         // Поддерживаем оба варианта: латинскую x и символ ×
 
-        // Формат: 6ПМ 3x5 или 6ПМ 3×5
+        //  6ПМ 3x5 или 6ПМ 3×5
         let m = line.match(/(\d+)\s*пм\s+(\d+)[x×](\d+)/i);
         if (m) {
           configs.push({
@@ -246,7 +246,7 @@ export async function handleProgramCreationMessage(
           continue;
         }
 
-        // Формат: 80% 3x5 или 80% 3×5
+        //  80% 3x5 или 80% 3×5
         m = line.match(/(\d+)\s*%\s+(\d+)[x×](\d+)/i);
         if (m) {
           configs.push({
@@ -257,7 +257,7 @@ export async function handleProgramCreationMessage(
           continue;
         }
 
-        // Формат: 6ПМ x5 или 6ПМ ×5
+        //  6ПМ x5 или 6ПМ ×5
         m = line.match(/(\d+)\s*пм\s*[x×]\s*(\d+)/i);
         if (m) {
           configs.push({
@@ -268,7 +268,7 @@ export async function handleProgramCreationMessage(
           continue;
         }
 
-        // Формат: 70% x5 или 70% ×5
+        //  70% x5 или 70% ×5
         m = line.match(/(\d+)\s*%\s*[x×]\s*(\d+)/i);
         if (m) {
           configs.push({
@@ -283,7 +283,7 @@ export async function handleProgramCreationMessage(
       if (!configs.length) {
         await bot.sendMessage(
           chatId,
-          "❌ *Не понял формат*\n\n" +
+          "❌ *Не понял \n\n" +
           "💡 *Для каждого дня укажи в отдельной строке:*\n" +
           "▫️ *Понедельник:* 6ПМ 3×5\n" +
           "▫️ *Среда:* 80% 4×3\n" +

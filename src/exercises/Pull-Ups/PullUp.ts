@@ -1,6 +1,6 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
 import { getUserData, setUserData } from '../../types/UserData';
-import { pullUpsRules, femaleVariants, EvaluationRules } from './pullUpsRules';
+import { pullUpsRules, femaleVariants } from './pullUpsRules';
 
 export const PullUp = async (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;
@@ -11,11 +11,14 @@ export const PullUp = async (bot: TelegramBot, msg: Message) => {
 
   if (userData.PullUp === undefined) {
     const pullUps = parseInt(text, 10);
+    
     if (!isNaN(pullUps) && pullUps >= 0) {
+      const weight = userData.weight || 70;
+
+      // Сохраняем временное значение подтягиваний для сессии
       setUserData(chatId, { PullUp: pullUps });
 
       const age = userData.age || 25;
-      const weight = userData.weight || 70;
       const gender = userData.gender || 'male';
 
       function getRandom(arr: string[]) {
@@ -28,7 +31,7 @@ export const PullUp = async (bot: TelegramBot, msg: Message) => {
         const [minAge, maxAge] = rule.age;
         const [minPullUps, maxPullUps] = rule.pullUps;
         
-        // Проверка возраста и кол-во подтягиваний
+        // Проверка возраста и количества подтягиваний
         if (age >= minAge && age <= maxAge && 
             pullUps >= minPullUps && pullUps <= maxPullUps) {
           
@@ -48,18 +51,23 @@ export const PullUp = async (bot: TelegramBot, msg: Message) => {
 
       // Если правило не найдено, используем дефолтик
       if (!evaluation) {
-        evaluation = '👌 Неплохой результат! Продолжай тренироваться!';
+        evaluation = 'Неплохой результат! Продолжай тренироваться!';
       }
 
-      // женский варик
+      // Женский вариант 
       if (gender === 'female') {
-        evaluation += ' ' + getRandom(femaleVariants);
+        evaluation += ' ' + getRandom(femaleVariants).trim(); // trim() на всякий случай уберет лишние пробелы
       }
 
       await bot.sendMessage(chatId, evaluation);
       await bot.sendMessage(chatId, 'Спасибо! Все данные получены. Что-то еще?');
 
-      setUserData(chatId, { ratingMode: false, ratingExercise: undefined });
+      // Полностью очищаем стейт после завершения оценки
+      setUserData(chatId, { 
+        ratingMode: false, 
+        ratingExercise: undefined, 
+        PullUp: undefined // СБРОС подтягиваний для будущих тестов
+      });
     } else {
       await bot.sendMessage(chatId, 'Пожалуйста, введи корректное число подтягиваний.');
     }
