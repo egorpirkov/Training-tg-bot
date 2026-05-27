@@ -16,6 +16,7 @@ const sendVideo_1 = require("./EditedVideos/sendEditedVideos/sendVideo");
 const getVideo_1 = require("./EditedVideos/getEditedVideos/getVideo");
 const express_1 = __importDefault(require("express"));
 const helpHandler_1 = require("./handlers/helpHandler");
+const db_1 = require("./utils/db");
 const app = (0, express_1.default)();
 app.get('/', (req, res) => res.send('Bot is alive 🚀'));
 const PORT = process.env.PORT || 3000;
@@ -75,6 +76,11 @@ bot.onText(/\/trainingplan/, (msg) => {
 bot.on('callback_query', (q) => (0, callbackHandler_1.callbackHandler)(bot, q));
 // единый обработчик сообщений
 bot.on('message', (msg) => {
+    // Сохраняем пользователя в БД при любой активности
+    const chatId = msg.chat.id;
+    const username = msg.from?.username || '';
+    const firstName = msg.from?.first_name || '';
+    (0, db_1.saveUser)(chatId, username, firstName);
     if (msg.text && !msg.text.startsWith('/')) {
         (0, messageHandler_1.messageHandler)(bot, msg);
     }
@@ -91,4 +97,23 @@ bot.onText(/\/help/, (msg) => {
 });
 //получение эдита 
 (0, getVideo_1.getVideoHandler)(bot);
+// Получение статистики (для админов)
+bot.onText(/\/stats/, async (msg) => {
+    const chatId = msg.chat.id;
+    const username = msg.from?.username || '';
+    if (username === 'Musashi_Hammer' || username === 'WalterGrimes' || username === 'tem_gmx') {
+        try {
+            const { total, active24h } = await (0, db_1.getStats)();
+            await bot.sendMessage(chatId, `Статистика бота:\n\n` +
+                `Всего уникальных пользователей: ${total}\n` +
+                `Активных за последние 24ч: ${active24h}`);
+        }
+        catch (err) {
+            await bot.sendMessage(chatId, 'Ошибка при получении статистики.');
+        }
+    }
+    else {
+        await bot.sendMessage(chatId, 'У вас нет прав для просмотра статистики.');
+    }
+});
 console.log('Бот запущен…');

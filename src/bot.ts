@@ -12,6 +12,7 @@ import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
 import { getVideoHandler } from './EditedVideos/getEditedVideos/getVideo';
 import express from 'express';
 import { helpHandler } from './handlers/helpHandler';
+import { saveUser, getStats } from './utils/db';
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive 🚀'));
 const PORT = process.env.PORT || 3000;
@@ -87,6 +88,12 @@ bot.on('callback_query', (q) => callbackHandler(bot, q));
 
 // единый обработчик сообщений
 bot.on('message', (msg) => {
+  // Сохраняем пользователя в БД при любой активности
+  const chatId = msg.chat.id;
+  const username = msg.from?.username || '';
+  const firstName = msg.from?.first_name || '';
+  saveUser(chatId, username, firstName);
+
   if (msg.text && !msg.text.startsWith('/')) {
     messageHandler(bot, msg);
   }
@@ -106,5 +113,27 @@ bot.onText(/\/help/, (msg) => {
 
 //получение эдита 
 getVideoHandler(bot);
+
+// Получение статистики (для меня только)
+bot.onText(/\/stats/, async (msg) => {
+  const chatId = msg.chat.id;
+  const username = msg.from?.username || '';
+
+  if (username === 'Musashi_Hammer' || username === 'WalterGrimes' || username === 'tem_gmx') {
+    try {
+      const { total, active24h } = await getStats();
+      await bot.sendMessage(
+        chatId, 
+        `Статистика бота:\n\n` +
+        `Всего уникальных пользователей: ${total}\n` +
+        `Активных за последние 24ч: ${active24h}`
+      );
+    } catch (err) {
+      await bot.sendMessage(chatId, 'Ошибка при получении статистики.');
+    }
+  } else {
+    await bot.sendMessage(chatId, 'У вас нет прав для просмотра статистики.');
+  }
+});
 
 console.log('Бот запущен…');

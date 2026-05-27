@@ -61,7 +61,7 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
       }
     }
 
-    // Когда все данные собраны - обрабатываем упражнение
+    // обрабатываем упражнение
     switch (userData.ratingExercise) {
       case 'bench':
         await Bench(bot, msg);
