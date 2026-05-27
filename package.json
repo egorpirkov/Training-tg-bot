@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/bot.js",
-    "dev": "ts-node src/bot.ts"
+    "dev": "ts-node src/bot.ts",
+    "postinstall": "npm rebuild sqlite3 --build-from-source"
   },
   "dependencies": {
     "@types/express": "^5.0.3",
