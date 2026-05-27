@@ -57,7 +57,7 @@ const messageHandler = async (bot, msg) => {
                 return;
             }
         }
-        // Когда все данные собраны - обрабатываем упражнение
+        // обрабатываем упражнение
         switch (userData.ratingExercise) {
             case 'bench':
                 await (0, Bench_1.Bench)(bot, msg);

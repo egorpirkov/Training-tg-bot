@@ -97,11 +97,11 @@ bot.onText(/\/help/, (msg) => {
 });
 //получение эдита 
 (0, getVideo_1.getVideoHandler)(bot);
-// Получение статистики (для админов)
+// Получение статистики (для меня только)
 bot.onText(/\/stats/, async (msg) => {
     const chatId = msg.chat.id;
     const username = msg.from?.username || '';
-    if (username === 'MusashiHammer' || username === 'obj' || username === '@elkamadness') {
+    if (username === 'MusashiHammer' || username === 'obj ' || username === '@elkamadness') {
         try {
             const { total, active24h } = await (0, db_1.getStats)();
             await bot.sendMessage(chatId, `Статистика бота:\n\n` +

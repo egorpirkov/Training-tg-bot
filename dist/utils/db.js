@@ -6,10 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStats = exports.saveUser = void 0;
 const sqlite3_1 = __importDefault(require("sqlite3"));
 const path_1 = __importDefault(require("path"));
-// База данных сохраняется в корне проекта
 const dbPath = path_1.default.resolve(process.cwd(), 'users.db');
 const db = new sqlite3_1.default.Database(dbPath);
-// Создаем таблицу при запуске, если она не существует
 db.serialize(() => {
     db.run(`
     CREATE TABLE IF NOT EXISTS users (
@@ -21,9 +19,6 @@ db.serialize(() => {
     )
   `);
 });
-/**
- * Сохраняет пользователя или обновляет время его последней активности.
- */
 const saveUser = (chatId, username, firstName) => {
     const now = new Date().toISOString();
     db.get('SELECT chat_id FROM users WHERE chat_id = ?', [chatId], (err, row) => {
@@ -32,7 +27,6 @@ const saveUser = (chatId, username, firstName) => {
             return;
         }
         if (!row) {
-            // Новый пользователь
             db.run('INSERT INTO users (chat_id, username, first_name, joined_at, last_active_at) VALUES (?, ?, ?, ?, ?)', [chatId, username, firstName, now, now], (insertErr) => {
                 if (insertErr) {
                     console.error('Ошибка добавления пользователя в БД:', insertErr);
@@ -43,7 +37,6 @@ const saveUser = (chatId, username, firstName) => {
             });
         }
         else {
-            // Обновляем время последней активности
             db.run('UPDATE users SET last_active_at = ? WHERE chat_id = ?', [now, chatId], (updateErr) => {
                 if (updateErr) {
                     console.error('Ошибка обновления активности в БД:', updateErr);
@@ -53,9 +46,6 @@ const saveUser = (chatId, username, firstName) => {
     });
 };
 exports.saveUser = saveUser;
-/**
- * Получает статистику по пользователям.
- */
 const getStats = () => {
     return new Promise((resolve) => {
         db.get('SELECT COUNT(*) as total FROM users', (err, row) => {
