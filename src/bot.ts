@@ -119,7 +119,7 @@ bot.onText(/\/stats/, async (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from?.username || '';
 
-  if (username === 'Musashi_Hammer' || username === 'WalterGrimes' || username === 'tem_gmx') {
+  if (username === 'MusashiHammer' || username === 'obj ' || username === '@elkamadness') {
     try {
       const { total, active24h } = await getStats();
       await bot.sendMessage(
