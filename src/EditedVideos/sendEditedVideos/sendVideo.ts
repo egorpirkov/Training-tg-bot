@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 import fs from "fs";
 import path from "path";
 
-const videosDir = path.join(process.cwd(), 'src', 'EditedVideos'); // src/EditedVideos
+const videosDir = path.join(process.cwd(), 'src', 'Edits'); 
 let usedIndexes: number[] = [];
 
 export function sendRandomVideo(bot: TelegramBot, chatId: number) {
