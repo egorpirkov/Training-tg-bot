@@ -29,24 +29,24 @@ const bot = new TelegramBot(token, { polling: true });
 bot.setMyCommands([
   { command: 'start', description: 'Запуск бота' },
   { command: 'help', description: 'ответы на вопросы' },
-  { command: 'createProgram', description: 'Создать тренировочную программу' },
-  { command: 'rateExercise', description: 'Оценить силовые показатели(подтягивание,брусья и тд)' },
-  { command: 'trainingPlan', description: 'Ввести готовую программу(в разработке)' },
-  { command: 'getEdit', description: 'Получить случайный эдит' },
-  { command: 'sendEdit', description: 'Отправить свой эдит админу' },
+  { command: 'createprogram', description: 'Создать тренировочную программу' },
+  { command: 'rateexercise', description: 'Оценить силовые показатели' },
+  { command: 'trainingplan', description: 'Ввести готовую программу(в разработке)' },
+  { command: 'getedit', description: 'Получить случайный эдит' },
+  { command: 'sendedit', description: 'Отправить свой эдит админу' },
 ]);
 
 
 
 // /start
-bot.onText(/\/start/, (msg) => {
+bot.onText(/\/start/i, (msg) => {
   const chatId = msg.chat.id;
   resetUserData(chatId);
   startHandler(bot, chatId);
 });
 
 // /createprogram 
-bot.onText(/\/createprogram/, (msg) => {
+bot.onText(/\/createprogram/i, (msg) => {
   const chatId = msg.chat.id;
   const u = getUserData(chatId);
   setUserData(chatId, { ...u, programData: undefined, currentStep: undefined });
@@ -54,10 +54,10 @@ bot.onText(/\/createprogram/, (msg) => {
 });
 
 // /rateexercise
-bot.onText(/\/rateexercise/, (msg) => {
+bot.onText(/\/rateexercise/i, (msg) => {
   const chatId = msg.chat.id;
   setUserData(chatId, { ratingMode: true, ratingExercise: undefined, weight: undefined, age: undefined });
-  bot.sendMessage(chatId, '💪 Выбери упражнение для оценки:', {
+  bot.sendMessage(chatId, 'Выбери упражнение для оценки:', {
     reply_markup: {
       inline_keyboard: [[
         { text: 'Жим лёжа', callback_data: 'rate_bench' },
@@ -69,9 +69,9 @@ bot.onText(/\/rateexercise/, (msg) => {
 });
 
 // /trainingplan
-bot.onText(/\/trainingplan/, (msg) => {
+bot.onText(/\/trainingplan/i, (msg) => {
   bot.sendMessage(msg.chat.id,
-    '📝 Отправь программу в текстовом виде.\n\n' +
+    'Отправь программу в текстовом виде.\n\n' +
     '*Пример 1 (проценты):*\n' +
     'Пн: 70% 4x2\n' +
     'Ср: 75% 4x2\n' +
@@ -100,13 +100,13 @@ bot.on('message', (msg) => {
 });
 
 //рандом эдит
-bot.onText(/\/getEdit/, (msg) => {
+bot.onText(/\/getedit/i, (msg) => {
   const chatId = msg.chat.id;
   sendRandomVideo(bot, chatId);
 });
 
 //help
-bot.onText(/\/help/, (msg) => {
+bot.onText(/\/help/i, (msg) => {
   const chatId = msg.chat.id;
   helpHandler(bot, chatId);
 })
@@ -115,7 +115,7 @@ bot.onText(/\/help/, (msg) => {
 getVideoHandler(bot);
 
 // Получение статистики (для меня только)
-bot.onText(/\/stats/, async (msg) => {
+bot.onText(/\/stats/i, async (msg) => {
   const chatId = msg.chat.id;
   const username = msg.from?.username || '';
 
