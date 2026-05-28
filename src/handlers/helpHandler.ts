@@ -10,7 +10,7 @@ export const helpHandler = (bot: TelegramBot, chatId: number) => {
                     [{ text: '❓ Зачем нужны проценты от 1ПМ?', callback_data: 'faq_percent' }],
                     [{ text: '❓ Как работает команда /createprogram?', callback_data: 'faq_createprogram' }],
                     [{ text: '❓ Зачем отправлять свой эдит админу?', callback_data: 'faq_edit' }],
-                    [{ text: '💬 Другие вопросы? Написать разработчику', url: 'https://t.me/tem_gmx' }]
+                    [{ text: '💬 Другие вопросы? Написать разработчику', url: 'https://t.me/MusashiHammer' }]
                 ]
             }
         }
