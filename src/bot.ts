@@ -100,7 +100,7 @@ bot.on('message', (msg) => {
 });
 
 //рандом эдит
-bot.onText(/\/sendvideo/, (msg) => {
+bot.onText(/\/getEdit/, (msg) => {
   const chatId = msg.chat.id;
   sendRandomVideo(bot, chatId);
 });

@@ -14,7 +14,7 @@ function generateProgramText(programData: UserProgramData) {
     return "❌ Нет данных для программы.";
   }
 
-  let resp = `💪 *ТВОЯ ПРОГРАММА ТРЕНИРОВОК на основе твоего плана* 💪\n`;
+  let resp = ` *ТВОЯ ПРОГРАММА ТРЕНИРОВОК на основе твоего плана* \n`;
   resp += `🔸 *1ПМ: ${maxWeight} кг*\n\n`;
 
   weeks.forEach((week, wi) => {

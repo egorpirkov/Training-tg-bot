@@ -2,11 +2,9 @@ import TelegramBot from "node-telegram-bot-api";
 import fs from "fs";
 import path from "path";
 
-// Путь к папке с видео
 const videosDir = path.join(process.cwd(), 'src', 'EditedVideos'); // src/EditedVideos
 let usedIndexes: number[] = [];
 
-// Функция для отправки случайного видео
 export function sendRandomVideo(bot: TelegramBot, chatId: number) {
   const files = fs.readdirSync(videosDir).filter(file =>
     file.endsWith(".mp4") || file.endsWith(".mov") || file.endsWith(".avi")
@@ -17,12 +15,10 @@ export function sendRandomVideo(bot: TelegramBot, chatId: number) {
     return;
   }
 
-  // если все видео были показаны — сбрасываем список
   if (usedIndexes.length >= files.length) {
     usedIndexes = [];
   }
 
-  // выбираем случайное видео, которого не было
   let index: number;
   do {
     index = Math.floor(Math.random() * files.length);
