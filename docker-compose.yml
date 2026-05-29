@@ -5,8 +5,7 @@ services:
     build: .
     container_name: kachbot
     restart: always
+    network_mode: "host"
     volumes:
       - ./users.db:/app/users.db
       - ./.env:/app/.env
-    ports:
-      - "3000:3000"
