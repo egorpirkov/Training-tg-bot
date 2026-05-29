@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  tg-bot:
+    build: .
+    container_name: kachbot
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./users.db:/app/users.db
+    ports:
+      - "3000:3000"
