@@ -13,18 +13,28 @@ import { getVideoHandler } from './EditedVideos/getEditedVideos/getVideo';
 import express from 'express';
 import { helpHandler } from './handlers/helpHandler';
 import { saveUser, getStats } from './utils/db';
-const app = express();
-app.get('/', (req, res) => res.send('Bot is alive 🚀'));
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server is alive on port ${PORT}`));
-
-
-
 
 const token = process.env.BOT_TOKEN;
 if (!token) throw new Error('BOT_TOKEN не найден в .env');
 
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token, { webHook: true });
+
+const app = express();
+app.use(express.json());
+
+app.get('/', (req, res) => res.send('Bot is alive '));
+
+app.post(`/bot${token}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server alive on port ${PORT}`);
+  bot.setWebHook(`https://training-tg-bot-1.onrender.com/bot${token}`);
+});
+
 
 bot.setMyCommands([
   { command: 'start', description: 'Запуск бота' },
@@ -83,12 +93,12 @@ bot.onText(/\/trainingplan/i, (msg) => {
   );
 });
 
-// общий обработчик callback_query
+
 bot.on('callback_query', (q) => callbackHandler(bot, q));
 
 // единый обработчик сообщений
 bot.on('message', (msg) => {
-  // Сохраняем пользователя в БД при любой активности
+  // Сохраняем пользователя в бд при любой активности
   const chatId = msg.chat.id;
   const username = msg.from?.username || '';
   const firstName = msg.from?.first_name || '';
