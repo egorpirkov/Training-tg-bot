@@ -7,6 +7,8 @@ services:
     restart: always
     env_file:
       - .env
+    environment:
+      - NODE_ENV=production
     volumes:
       - ./users.db:/app/users.db
     ports:
