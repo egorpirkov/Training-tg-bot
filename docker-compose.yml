@@ -1,11 +1,10 @@
-version: '3.8'
-
 services:
   tg-bot:
     build: .
     container_name: kachbot
     restart: always
     network_mode: "host"
+    env_file:
+      - .env
     volumes:
-      - ./users.db:/app/users.db
-      - ./.env:/app/.env
+      - ./data:/app/data
