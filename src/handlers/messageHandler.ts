@@ -7,6 +7,7 @@ import { handleProgramCreationMessage } from '../utils/programCreation';
 import { Bench } from '../exercises/Bench/Bench';
 import { PullUp } from '../exercises/Pull-Ups/PullUp';
 import { Dips } from '../exercises/Dips/Dips';
+import { tiktokHandler } from './tiktokHandler';
 
 export const messageHandler = async (bot: TelegramBot, msg: Message) => {
   const chatId = msg.chat.id;
@@ -15,7 +16,13 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
 
   const userData = getUserData(chatId);
 
-  
+  const tiktokRegex = /https?:\/\/(www\.)?(tiktok\.com|vm\.tiktok\.com)\/\S+/i;
+  if (tiktokRegex.test(text)) {
+    await tiktokHandler(bot, chatId, text);
+    return;
+  }
+
+
   if (userData.currentStep) {
     await handleProgramCreationMessage(bot, chatId, text);
     return;
@@ -28,7 +35,7 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
       const age = parseInt(text, 10);
       if (!isNaN(age) && age > 0 && age < 120) {
         setUserData(chatId, { age });
-        
+
         if (userData.ratingExercise === 'bench') {
           await bot.sendMessage(chatId, '✅ Возраст установлен. Теперь введи свой вес тела (в кг):');
         } else {
@@ -46,7 +53,7 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
       const weight = parseFloat(text.replace(',', '.'));
       if (!isNaN(weight) && weight >= 30 && weight <= 150) {
         setUserData(chatId, { weight });
-        
+
         if (userData.ratingExercise === 'bench') {
           await bot.sendMessage(chatId, '✅ Вес установлен. Теперь введи свой максимальный результат в жиме лежа (в кг):');
         } else if (userData.ratingExercise === 'pullups') {
