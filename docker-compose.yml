@@ -4,7 +4,7 @@ services:
     container_name: kachbot
     restart: always
     environment:
-      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - BOT_TOKEN=${BOT_TOKEN}
     volumes:
       - ./users.db:/app/users.db
     ports:
