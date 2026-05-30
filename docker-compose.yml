@@ -7,4 +7,4 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/app/data
+      - /root/Training-tg-bot/users.db:/app/data/users.db
