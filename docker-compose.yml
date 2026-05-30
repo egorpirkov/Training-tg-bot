@@ -5,6 +5,6 @@ services:
     restart: always
     network_mode: "host"
     env_file:
-      - /root/Training-tg-bot/.env
+      - .env
     volumes:
       - /root/Training-tg-bot/users.db:/app/data/users.db

@@ -12,6 +12,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Copy .env file
+        run: |
+          sudo cp /root/Training-tg-bot/.env ./.env
+          sudo chown boss:boss .env  
+
       - name: Build and Restart Docker Containers
         run: |
           docker compose build tg-bot
