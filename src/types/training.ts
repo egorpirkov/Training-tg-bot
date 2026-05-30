@@ -76,7 +76,7 @@ export interface UserData {
   tempRepsPerDay?: number[];
   tempSets?: number;
   tempReps?: number;
-  tempDayConfigs?: DayConfig[] | null;
+  tempDayConfigs?: DayConfig[][] | DayConfig[] | null;
   otherPMs?: Record<number, number> | null;
  
 

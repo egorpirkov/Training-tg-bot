@@ -14,26 +14,32 @@ import express from 'express';
 import { helpHandler } from './handlers/helpHandler';
 import { saveUser, getStats } from './utils/db';
 
-const token = process.env.BOT_TOKEN;
-if (!token) throw new Error('BOT_TOKEN не найден в .env');
+const isLocal = !process.env.PORT;
+const token = (isLocal && process.env.TEST_BOT_TOKEN) ? process.env.TEST_BOT_TOKEN : process.env.BOT_TOKEN;
 
-const bot = new TelegramBot(token, { webHook: true });
+if (!token) throw new Error('Токен бота не найден в .env');
 
-const app = express();
-app.use(express.json());
+const bot = new TelegramBot(token, isLocal ? { polling: true } : { webHook: true });
 
-app.get('/', (req, res) => res.send('Bot is alive '));
+if (!isLocal) {
+  const app = express();
+  app.use(express.json());
 
-app.post(`/bot${token}`, (req, res) => {
-  bot.processUpdate(req.body);
-  res.sendStatus(200);
-});
+  app.get('/', (req, res) => res.send('Bot is alive '));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server alive on port ${PORT}`);
-  bot.setWebHook(`https://training-tg-bot-1.onrender.com/bot${token}`);
-});
+  app.post(`/bot${token}`, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+  });
+
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server alive on port ${PORT}`);
+    bot.setWebHook(`https://training-tg-bot-1.onrender.com/bot${token}`);
+  });
+} else {
+  console.log('Бот запущен локально в режиме Polling...');
+}
 
 
 bot.setMyCommands([
