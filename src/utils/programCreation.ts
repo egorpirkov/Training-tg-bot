@@ -91,7 +91,7 @@ export async function handleProgramCreationMessage(
   switch (step) {
     case "days": {
       const days = text
-        .split(/[,\n;]+/)
+        .split(/[,\s\n;]+/)
         .map((s) => s.trim())
         .filter(Boolean)
         .map(normDay)
@@ -101,9 +101,10 @@ export async function handleProgramCreationMessage(
         await bot.sendMessage(
           chatId,
           "❌ *Не понял дни*\n\n" +
-          "💡 *Попробуй так:*\n" +
-          "▫️ пн, ср, пт\n" +
-          "▫️ вт, чт, сб",
+          "💡 *Примеры ввода (через пробел или запятую):*\n" +
+          "▫️ пн ср пт\n" +
+          "▫️ вт, чт, сб\n" +
+          "▫️ понедельник, среда, пятница",
           { parse_mode: "Markdown" }
         );
         return;

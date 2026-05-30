@@ -1,5 +1,6 @@
 import TelegramBot, { CallbackQuery } from 'node-telegram-bot-api';
 import { setUserData, getUserData } from '../types/UserData'
+import { downloadTikTok } from './tiktokHandler';
 
 export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) => {
   const chatId = query.message?.chat.id;
@@ -26,6 +27,14 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
         ]
       }
     });
+    return;
+  }
+
+ if (data.startsWith('tiktok_video_') || data.startsWith('tiktok_audio_')) {
+    const type = data.startsWith('tiktok_video_') ? 'video' : 'audio';
+    const url = decodeURIComponent(data.replace(`tiktok_${type}_`, ''));
+    await bot.answerCallbackQuery(query.id);
+    await downloadTikTok(bot, chatId, url, type);
     return;
   }
 
