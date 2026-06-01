@@ -33,7 +33,7 @@ if (connectionString) {
   });
 } else {
   console.log('DATABASE_URL не найден. Локальный запуск: подключение к SQLite (users.db)...');
-  const dbPath = path.resolve(process.cwd(), 'users.db');
+  const dbPath = path.resolve(process.cwd(), process.env.SQLITE_PATH || 'users.db');
   sqliteDb = new sqlite3.Database(dbPath);
   
   sqliteDb.serialize(() => {

@@ -1,46 +1,68 @@
-# Getting Started with Create React App
+# 💪 @kachkovi_bot — Умный фитнес-помощник в Telegram
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Telegram](https://img.shields.io/badge/Telegram-26A69A?style=for-the-badge&logo=telegram&logoColor=white)](https://core.telegram.org/bots)
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📋 About
 
-### `npm start`
+**KachBot** — телеграм-бот, который считает 1ПМ (одноповторный максимум), оценивает рекорды по возрасту и весу, распознаёт программу тренировок с фото и может выдать готовый план.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+**Примеры запросов, на которые отвечает бот:**
+* 💬 *«Сколько мой максимум, если пожал 100 на 10?»*
+* 💬 *«Норм ли 140 в 15 лет?»*
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+---
 
-### `npm test`
+## ✨ Возможности бота
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* **🏋️ Интерактивный конструктор программ (`/createprogram`)**
+  Пошаговый опрос для составления индивидуальной программы тренировок. Бот собирает данные о тренировочных днях, желаемой интенсивности, подходах и вашем 1ПМ, после чего рассчитывает точный рабочий вес в килограммах для каждого упражнения.
 
-### `npm run build`
+* **📊 Оценка силовых показателей (`/rateexercise`)**
+  Анализ силовых достижений в классических упражнениях: **жим лежа**, **подтягивания** и **отжимания на брусьях**. Бот рассчитывает отношение поднятого веса к весу вашего тела с поправкой на возраст и пол, определяя ваш текущий атлетический уровень.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* **📝 Анализатор тренировочных программ (`/trainingplan`)**
+  Инструмент для быстрого импорта готовых программ. Вы можете отправить текстовую запись плана тренировок (например, `Пн: 70% 4x2`), а бот распарсит её и переведет все проценты в реальный рабочий вес.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* **📹 Спортивная мотивация (`/getedit` & `/sendedit`)**
+  Инструмент для поддержки спортивного настроя:
+  * Получение случайных видеороликов из локальной коллекции эдитов.
+  * Возможность отправить свое видео администраторам бота для пополнения коллекции.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🛠 Технологический стек
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+* **Среда выполнения**: [Node.js](https://nodejs.org/) (TypeScript)
+* **API Telegram**: [`node-telegram-bot-api`](https://github.com/yagop/node-telegram-bot-api)
+* **Базы данных**: Автоматический гибридный режим:
+  * **PostgreSQL** — используется в продакшене при указании строки подключения `DATABASE_URL`.
+  * **SQLite** — используется по умолчанию для локальной разработки (`users.db`).
+* **Keep-Alive**: Express-сервер для поддержки работоспособности и прохождения health-check проверок.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 🚀 Быстрый запуск и развёртывание
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 1. Настройка окружения
+Создайте файл `.env` в корневой директории:
+```env
+BOT_TOKEN=your_telegram_bot_token
+DATABASE_URL=your_postgresql_connection_string # Необязательно
+PORT=3000
+```
 
-## Learn More
+### 2. Запуск в режиме разработки
+```bash
+npm install
+npm run dev
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3. Развёртывание на хостинг
+При деплое на платформы вроде Render, Heroku или Railway:
+1. Добавьте переменные окружения `BOT_TOKEN` и `DATABASE_URL` в панели управления хостинга.
+2. Установите команду сборки: `npm run build`.
+3. Установите команду запуска: `npm start`.

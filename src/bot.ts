@@ -78,7 +78,7 @@ bot.onText(/\/rateexercise/i, (msg) => {
       inline_keyboard: [[
         { text: 'Жим лёжа', callback_data: 'rate_bench' },
         { text: 'Подтягивания', callback_data: 'rate_pullups' },
-        { text: 'Брусья', callback_data: 'rate_dips' },
+        { text: 'Брусья (дипсы)', callback_data: 'rate_dips' },
       ]]
     }
   });

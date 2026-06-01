@@ -1,0 +1,10 @@
+services:
+  tg-bot:
+    build: .
+    container_name: kachbot
+    restart: always
+    network_mode: "host"
+    env_file:
+      - .env
+    volumes:
+      - /root/Training-tg-bot/users.db:/app/data/users.db
