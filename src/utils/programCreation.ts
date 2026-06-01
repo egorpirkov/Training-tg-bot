@@ -11,14 +11,14 @@ function pmToPercentage(pm: number): number {
 function generateProgramText(programData: UserProgramData) {
   const { weeks, maxWeight } = programData;
   if (!weeks || !weeks.length || !maxWeight) {
-    return "❌ Нет данных для программы.";
+    return "🤔 Нет данных для программы.";
   }
 
-  let resp = ` *ТВОЯ ПРОГРАММА ТРЕНИРОВОК на основе твоего плана* \n`;
-  resp += `🔸 *1ПМ: ${maxWeight} кг*\n\n`;
+  let resp = ` *Вот готовая программа на основе твоего плана* \n`;
+  resp += ` *1ПМ: ${maxWeight} кг*\n\n`;
 
   weeks.forEach((week, wi) => {
-    resp += `📅 *НЕДЕЛЯ ${wi + 1}*\n`;
+    resp += ` *НЕДЕЛЯ ${wi + 1}*\n`;
 
     for (const [day, configs] of Object.entries(week)) {
       resp += `*${day.toUpperCase()}*\n`;
@@ -48,7 +48,52 @@ function generateProgramText(programData: UserProgramData) {
   return resp;
 }
 
-// Первый шаг: запуск программы
+// Функция парсинга одного сегмента тренировки (например, 2x60%/5 или 6ПМ 3x5)
+function parseSegment(segment: string): DayConfig | null {
+  segment = segment.trim().toLowerCase();
+
+  // Паттерн 1 подходы x вес/повторения, например 2x60%/5 или 2x6пм/5
+  let m = segment.match(/^(\d+)\s*[x×х]\s*(\d+)\s*(%|пм)\s*\/\s*(\d+)$/i);
+  if (m) {
+    const sets = parseInt(m[1]);
+    const val = parseInt(m[2]);
+    const isPercent = m[3] === '%';
+    const reps = parseInt(m[4]);
+    return isPercent ? { percentage: val, sets, reps } : { pm: val, sets, reps };
+  }
+
+  // Паттерн 2 вес/повторения (1 подход), например 40%/10 или 6пм/5
+  m = segment.match(/^(\d+)\s*(%|пм)\s*\/\s*(\d+)$/i);
+  if (m) {
+    const val = parseInt(m[1]);
+    const isPercent = m[2] === '%';
+    const reps = parseInt(m[3]);
+    return isPercent ? { percentage: val, sets: 1, reps } : { pm: val, sets: 1, reps };
+  }
+
+  // Паттерн 3 вес подходы x повторения, например 80% 3x5 или 6пм 3x5
+  m = segment.match(/^(\d+)\s*(%|пм)\s+(\d+)[x×х](\d+)/i);
+  if (m) {
+    const val = parseInt(m[1]);
+    const isPercent = m[2] === '%';
+    const sets = parseInt(m[3]);
+    const reps = parseInt(m[4]);
+    return isPercent ? { percentage: val, sets, reps } : { pm: val, sets, reps };
+  }
+
+  // Паттерн 4 вес x повторения (1 подход), например 70% x5 или 6пм x5
+  m = segment.match(/^(\d+)\s*(%|пм)\s*[x×х]\s*(\d+)$/i);
+  if (m) {
+    const val = parseInt(m[1]);
+    const isPercent = m[2] === '%';
+    const reps = parseInt(m[3]);
+    return isPercent ? { percentage: val, sets: 1, reps } : { pm: val, sets: 1, reps };
+  }
+
+  return null;
+}
+
+// Первый шаг запуск программы
 export async function startProgramCreation(bot: TelegramBot, chatId: number) {
   setUserData(chatId, {
     programData: { weeks: [] },
@@ -59,9 +104,10 @@ export async function startProgramCreation(bot: TelegramBot, chatId: number) {
     chatId,
     "🏋️ *Создадим тебе план на основе твоей программы!*\n\n" +
     "📅 *В какие дни тренируешься?*\n" +
-    "▫️ Пример: пн, ср, пт\n" +
-    "▫️ Или: вт, чт, сб\n\n" +
-    "(Укажи дни через запятую)",
+    "  Примеры ввода:\n" +
+    "  - пн ср пт\n" +
+    "  - вт, чт, сб\n" +
+    "  - понедельник, среда, пятница",
     { parse_mode: "Markdown" }
   );
 }
@@ -72,6 +118,9 @@ export async function handleProgramCreationMessage(
   chatId: number,
   text: string
 ) {
+
+  text = text.replace(/[\u200b\u200c\u200d\ufeff]/g, "");
+
   const u = getUserData(chatId);
   const step = u.currentStep;
   if (!step) return;
@@ -100,11 +149,11 @@ export async function handleProgramCreationMessage(
       if (!days.length) {
         await bot.sendMessage(
           chatId,
-          "❌ *Не понял дни*\n\n" +
-          "💡 *Примеры ввода (через пробел или запятую):*\n" +
-          "▫️ пн ср пт\n" +
-          "▫️ вт, чт, сб\n" +
-          "▫️ понедельник, среда, пятница",
+          "🤔 *Не понял дни*\n\n" +
+          "💡 *Примеры ввода:*\n" +
+          " пн ср пт\n" +
+          " вт, чт, сб\n" +
+          " понедельник, среда, пятница",
           { parse_mode: "Markdown" }
         );
         return;
@@ -119,13 +168,13 @@ export async function handleProgramCreationMessage(
 
       await bot.sendMessage(
         chatId,
-        "📝 *Теперь укажи нагрузки для каждого дня:*\n\n" +
-        "💡 *Какой ПМ указан в твоей программе?(6ПМ,2ПМ)*\n" +
-        "▫️ Примеры форматов тренировок:\n" +
-        "   - 6ПМ 3×5 (для 6ПМ)\n" +
-        "   - 80% 4×3 (для процентов)\n" +
-        "   - 5ПМ ×8 (один подход)\n\n" +
-        `💡 *Указывая такие строки, ты задаешь нагрузки для дней недели:* ${days.join(', ')}`,
+        "📝 *Теперь укажи нагрузки для каждого дня :*\n\n" +
+        ` *Для каждого из дней (${days.join(', ')}) введи ПМ/процент, подходы и повторения:*\n` +
+        "   Примеры форматов:\n" +
+        "   - 80% 4×3 \n" +
+        "   - 6ПМ 3×5 \n" +
+        "   - 40%/\u200B10 ; 2x60%/\u200B5 ; 3x72%/\u200B5 (или более обьемные тренировки)\n\n" +
+        "💡 *Каждый день пиши с новой строки (через Enter)*\n\n",
         { parse_mode: "Markdown" }
       );
       return;
@@ -133,81 +182,101 @@ export async function handleProgramCreationMessage(
 
     case "dayPercentSetsReps": {
       const lines = text.split(/\n+/).map((s) => s.trim()).filter(Boolean);
-      const configs: DayConfig[] = [];
+      const configs: DayConfig[][] = [];
 
-      for (const line of lines) {
-        // х или латинский х
+      for (let line of lines) {
 
-        // 6ПМ 3x5 или 6ПМ 3×5
-        let m = line.match(/(\d+)\s*пм\s+(\d+)[x×](\d+)/i);
-        if (m) {
-          configs.push({
-            pm: parseInt(m[1]),
-            sets: parseInt(m[2]),
-            reps: parseInt(m[3]),
-          });
-          continue;
+        line = line.replace(/^(пн|вт|ср|чт|пт|сб|вс|понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)\s*[:\-–—]?\s*/i, "");
+
+        const segments = line.split(/[;\n]+/).map((s) => s.trim()).filter(Boolean);
+        const dayConfigs: DayConfig[] = [];
+
+        for (const segment of segments) {
+          const parsed = parseSegment(segment);
+          if (parsed) {
+            dayConfigs.push(parsed);
+          }
         }
 
-        //  80% 3x5 или 80% 3×5
-        m = line.match(/(\d+)\s*%\s+(\d+)[x×](\d+)/i);
-        if (m) {
-          configs.push({
-            percentage: parseInt(m[1]),
-            sets: parseInt(m[2]),
-            reps: parseInt(m[3]),
-          });
-          continue;
-        }
-
-        //  6ПМ x5 или 6ПМ ×5
-        m = line.match(/(\d+)\s*пм\s*[x×]\s*(\d+)/i);
-        if (m) {
-          configs.push({
-            pm: parseInt(m[1]),
-            sets: 1,
-            reps: parseInt(m[2]),
-          });
-          continue;
-        }
-
-        //  70% x5 или 70% ×5
-        m = line.match(/(\d+)\s*%\s*[x×]\s*(\d+)/i);
-        if (m) {
-          configs.push({
-            percentage: parseInt(m[1]),
-            sets: 1,
-            reps: parseInt(m[2]),
-          });
-          continue;
+        if (dayConfigs.length > 0) {
+          configs.push(dayConfigs);
         }
       }
 
       if (!configs.length) {
         await bot.sendMessage(
           chatId,
-          "❌ *Не понял \n\n" +
-          "💡 *Примеры:*\n" +
+          "🤔 *Не понял*\n\n" +
+          " *Примеры:*\n" +
           "▫️ 6ПМ 3×5\n" +
           "▫️ 80% 4×3\n" +
-          "▫️ 5ПМ ×8\n\n" +
-          `📌 *Нужно ${u.tempDays?.length || 3} строки для дней:* ${u.tempDays?.join(', ') || 'пн, ср, пт'}`,
+          "▫️ 40%/\u200B10 ; 50%/\u200B5 ; 2x60%/\u200B5 ; 3x72%/\u200B5\n\n" +
+          `*Нужно ${u.tempDays?.length || 3} строки для дней:* ${u.tempDays?.join(', ') || 'пн, ср, пт'}`,
           { parse_mode: "Markdown" }
         );
         return;
-      }//здесь если пользователь ввел дни которые не соответсвуют заданным им же днями
+      }
 
       // Проверяем, что количество конфигов совпадает с количеством дней
       if (u.tempDays && configs.length !== u.tempDays.length) {
+        let helpText = '';
+        u.tempDays.forEach((day, idx) => {
+          const sample = idx === 0 ? "40%/\u200B10 ; 2x60%/\u200B5" : idx === 1 ? "80% 4×3" : "6ПМ ×5";
+          helpText += `▫️ ${day.toUpperCase()}: ${sample}\n`;
+        });
+
         await bot.sendMessage(
           chatId,
-          `❌ *Количество не совпадает!*\n\n` +
-          `📅 Ты указал ${u.tempDays.length} дней: ${u.tempDays.join(', ')}\n` +
-          `📝 А прислал ${configs.length} настроек\n\n` +
-          `💡 *Нужно по одной строке на каждый день:*\n` +
-          `▫️ ${u.tempDays[0]}: 6ПМ 3×5\n` +
-          `▫️ ${u.tempDays[1]}: 80% 4×3\n` +
-          `▫️ ${u.tempDays[2]}: 6ПМ ×5`,
+          `🤔 *Количество не совпадает!*\n\n` +
+          `📅 Ты выбрал ${u.tempDays.length} дня/дней: *${u.tempDays.join(', ')}*\n` +
+          `📝 А прислал ${configs.length} нагрузок.\n\n` +
+          `💡 *Впиши нагрузку для каждого из дней (по одной строке на день):*\n` +
+          helpText,
+          { parse_mode: "Markdown" }
+        );
+        return;
+      }
+
+      // Ищем первый встретившийся ПМ в конфигурациях
+      let targetPm: number | null = null;
+      for (const dayConfigs of configs) {
+        for (const cfg of dayConfigs) {
+          if (cfg.pm) {
+            targetPm = cfg.pm;
+            break;
+          }
+        }
+        if (targetPm) break;
+      }
+
+      const pd: UserProgramData = u.programData || { weeks: [] };
+      if (pd.maxWeight) {
+        const weekConfig: ProgramConfig = {};
+        if (u.tempDays) {
+          u.tempDays.forEach((day, index) => {
+            if (configs[index]) {
+              weekConfig[day] = configs[index];
+            }
+          });
+        }
+        pd.weeks.push(weekConfig);
+
+        setUserData(chatId, {
+          programData: pd,
+          tempDays: null,
+          tempDayConfigs: null,
+          currentStep: "addWeek",
+        });
+
+        await bot.sendMessage(chatId, generateProgramText(pd), {
+          parse_mode: "Markdown",
+        });
+
+        await bot.sendMessage(
+          chatId,
+          " 🤔*Добавить ещё одну неделю?*\n\n" +
+          " *Да* — добавлю новую неделю\n" +
+          " *Нет* — завершаю программу",
           { parse_mode: "Markdown" }
         );
         return;
@@ -218,114 +287,25 @@ export async function handleProgramCreationMessage(
         currentStep: "maxWeight",
       });
 
-      await bot.sendMessage(
-        chatId,
-        "💪 *Отлично! Теперь укажи свой 1ПМ:*\n\n" +
-        "▫️ Пример: 50\n" +
-        "▫️ Или: 120\n\n" +
-        "💡 *1ПМ* — максимальный вес, который можешь поднять 1 раз",
-        { parse_mode: "Markdown" }
-      );
-      return;
-    }
-
-    case "dayPercentSetsReps": {
-      const lines = text.split(/\n+/).map((s) => s.trim()).filter(Boolean);
-      const configs: DayConfig[] = [];
-
-      for (const line of lines) {
-        // Поддерживаем оба варианта: латинскую x и символ ×
-
-        //  6ПМ 3x5 или 6ПМ 3×5
-        let m = line.match(/(\d+)\s*пм\s+(\d+)[x×](\d+)/i);
-        if (m) {
-          configs.push({
-            pm: parseInt(m[1]),
-            sets: parseInt(m[2]),
-            reps: parseInt(m[3]),
-          });
-          continue;
-        }
-
-        //  80% 3x5 или 80% 3×5
-        m = line.match(/(\d+)\s*%\s+(\d+)[x×](\d+)/i);
-        if (m) {
-          configs.push({
-            percentage: parseInt(m[1]),
-            sets: parseInt(m[2]),
-            reps: parseInt(m[3]),
-          });
-          continue;
-        }
-
-        //  6ПМ x5 или 6ПМ ×5
-        m = line.match(/(\d+)\s*пм\s*[x×]\s*(\d+)/i);
-        if (m) {
-          configs.push({
-            pm: parseInt(m[1]),
-            sets: 1,
-            reps: parseInt(m[2]),
-          });
-          continue;
-        }
-
-        //  70% x5 или 70% ×5
-        m = line.match(/(\d+)\s*%\s*[x×]\s*(\d+)/i);
-        if (m) {
-          configs.push({
-            percentage: parseInt(m[1]),
-            sets: 1,
-            reps: parseInt(m[2]),
-          });
-          continue;
-        }
-      }
-
-      if (!configs.length) {
+      if (targetPm && targetPm > 1) {
         await bot.sendMessage(
           chatId,
-          "❌ *Не понял \n\n" +
-          "💡 *Для каждого дня укажи в отдельной строке:*\n" +
-          "▫️ *Понедельник:* 6ПМ 3×5\n" +
-          "▫️ *Среда:* 80% 4×3\n" +
-          "▫️ *Пятница:* 6ПМ ×5\n\n" +
-          "📝 *Можно использовать x или ×:*\n" +
-          "▫️ 6ПМ 3x5 = 6ПМ 3×5\n" +
-          "▫️ 80% 4x3 = 80% 4×3",
+          `💪 *Отлично! Теперь укажи свой ${targetPm}ПМ:*\n\n` +
+          ` Пример: 50кг\n` +
+          ` Или: 120кг\n\n` +
+          `💡 *${targetPm}ПМ* — максимальный вес, которую ты можешь выполнить на ${targetPm} раз`,
           { parse_mode: "Markdown" }
         );
-        return;
-      }
-
-      // Проверяем, что количество конфигов совпадает с количеством дней
-      if (u.tempDays && configs.length !== u.tempDays.length) {
+      } else {
         await bot.sendMessage(
           chatId,
-          `❌ *Количество не совпадает!*\n\n` +
-          `📅 Ты указал ${u.tempDays.length} дней: ${u.tempDays.join(', ')}\n` +
-          `📝 А прислал ${configs.length} настроек\n\n` +
-          `💡 *Нужно по одной строке на каждый день:*\n` +
-          `▫️ ${u.tempDays[0]}: 6ПМ 3×5\n` +
-          `▫️ ${u.tempDays[1]}: 80% 4×3\n` +
-          `▫️ ${u.tempDays[2]}: 6ПМ ×5`,
+          "💪 *Отлично! Теперь укажи свой 1ПМ:*\n\n" +
+          " Пример: 50кг\n" +
+          " Или: 120кг\n\n" +
+          "💡 *1ПМ* — максимальный вес, которую ты можешь выполнить на 1 раз",
           { parse_mode: "Markdown" }
         );
-        return;
       }
-
-      setUserData(chatId, {
-        tempDayConfigs: configs,
-        currentStep: "maxWeight",
-      });
-
-      await bot.sendMessage(
-        chatId,
-        "💪 *Отлично! Теперь укажи свой 1ПМ:*\n\n" +
-        "▫️ Пример: 50\n" +
-        "▫️ Или: 120\n\n" +
-        "💡 *1ПМ* — максимальный вес, который можешь поднять 1 раз",
-        { parse_mode: "Markdown" }
-      );
       return;
     }
 
@@ -334,11 +314,27 @@ export async function handleProgramCreationMessage(
       if (isNaN(max) || max <= 0) {
         await bot.sendMessage(
           chatId,
-          "❌ *Нужно число!*\n\n" +
+          "🤔 *Нужно число!*\n\n" +
           "💡 *Пример:* 50 или 120",
           { parse_mode: "Markdown" }
         );
         return;
+      }
+
+      // Ищем ПМ, который мы просили ввести
+      let targetPm: number | null = null;
+      if (u.tempDayConfigs) {
+        for (const dayConfigs of u.tempDayConfigs) {
+          if (Array.isArray(dayConfigs)) {
+            for (const cfg of dayConfigs) {
+              if (cfg.pm) {
+                targetPm = cfg.pm;
+                break;
+              }
+            }
+          }
+          if (targetPm) break;
+        }
       }
 
       const pd: UserProgramData = u.programData || { weeks: [] };
@@ -348,13 +344,25 @@ export async function handleProgramCreationMessage(
       if (u.tempDays && u.tempDayConfigs) {
         u.tempDays.forEach((day, index) => {
           if (u.tempDayConfigs && u.tempDayConfigs[index]) {
-            weekConfig[day] = [u.tempDayConfigs[index]];
+            const val = u.tempDayConfigs[index];
+            if (Array.isArray(val)) {
+              weekConfig[day] = val;
+            } else {
+              weekConfig[day] = [val as any];
+            }
           }
         });//создание готового конфига недели
       }
 
       pd.weeks.push(weekConfig);
-      pd.maxWeight = max;
+
+      // Если просили конкретный ПМ (например, 6ПМ), рассчитываем 1ПМ
+      if (targetPm && targetPm > 1) {
+        const pct = pmToPercentage(targetPm);
+        pd.maxWeight = Math.round(max / (pct / 100));
+      } else {
+        pd.maxWeight = max;
+      }
 
       setUserData(chatId, {
         programData: pd,
@@ -369,9 +377,9 @@ export async function handleProgramCreationMessage(
 
       await bot.sendMessage(
         chatId,
-        "❓ *Добавить ещё одну неделю?*\n\n" +
-        "▫️ *Да* — добавлю новую неделю\n" +
-        "▫️ *Нет* — завершаю программу",
+        " 🤔 *Добавить ещё одну неделю?*\n\n" +
+        " *Да* — добавлю новую неделю\n" +
+        " *Нет* — завершаю программу",
         { parse_mode: "Markdown" }
       );
       return;
@@ -391,7 +399,7 @@ export async function handleProgramCreationMessage(
         await bot.sendMessage(
           chatId,
           "🎉 *ПРОГРАММА СОЗДАНА!*\n\n" +
-          "💪 *Удачи в тренировках родной!*",
+          " *Удачи в тренировках!*",
           { parse_mode: "Markdown" }
         );
       }

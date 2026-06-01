@@ -14,13 +14,14 @@ import express from 'express';
 import { helpHandler } from './handlers/helpHandler';
 import { saveUser, getStats } from './utils/db';
 
-const token = process.env.BOT_TOKEN;
-if (!token) throw new Error('BOT_TOKEN не найден в .env');
+const isLocal = !process.env.PORT;
+const token = (isLocal && process.env.TEST_BOT_TOKEN) ? process.env.TEST_BOT_TOKEN : process.env.BOT_TOKEN;
 
-const webhookUrl = process.env.WEBHOOK_URL;
-const bot = new TelegramBot(token, webhookUrl ? { webHook: true } : { polling: true });
+if (!token) throw new Error('Токен бота не найден в .env');
 
-if (webhookUrl) {
+const bot = new TelegramBot(token, isLocal ? { polling: true } : { webHook: true });
+
+if (!isLocal) {
   const app = express();
   app.use(express.json());
 
@@ -34,16 +35,10 @@ if (webhookUrl) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server alive on port ${PORT}`);
-    bot.setWebHook(`${webhookUrl}/bot${token}`);
+    bot.setWebHook(`https://training-tg-bot-1.onrender.com/bot${token}`);
   });
 } else {
-  bot.deleteWebHook()
-    .then(() => {
-      console.log('Предыдущий Webhook удален, бот запущен в режиме Long Polling...');
-    })
-    .catch((err) => {
-      console.error('Ошибка при удалении Webhook:', err);
-    });
+  console.log('Бот запущен локально в режиме Polling...');
 }
 
 
