@@ -53,7 +53,7 @@ export const Dips = async (bot: TelegramBot, msg: Message) => {
       }
 
       await bot.sendMessage(chatId, evaluation);
-      await bot.sendMessage(chatId, 'Спасибо! Все данные по брусьям получены. Что-то еще?');
+      await bot.sendMessage(chatId, 'Спасибо! Все данные по брусьям получены,удачи на тренировках.');
       
       setUserData(chatId, { ratingMode: false, ratingExercise: undefined, Dips: undefined });
     } else {

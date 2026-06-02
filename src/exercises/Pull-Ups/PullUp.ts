@@ -60,7 +60,7 @@ export const PullUp = async (bot: TelegramBot, msg: Message) => {
       }
 
       await bot.sendMessage(chatId, evaluation);
-      await bot.sendMessage(chatId, 'Спасибо! Все данные получены. Что-то еще?');
+      await bot.sendMessage(chatId, 'Спасибо! Все данные по брусьям получены,удачи на тренировках.');
 
       // Полностью очищаем стейт после завершения оценки
       setUserData(chatId, { 

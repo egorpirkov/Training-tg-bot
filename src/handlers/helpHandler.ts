@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 
 export const helpHandler = (bot: TelegramBot, chatId: number) => {
     bot.sendMessage(chatId, 
-        'Помощь — выбери вопрос:',
+        'Вот основные вопросы,которые могут возникнуть у вас:',
         {
             reply_markup: {
                 inline_keyboard: [

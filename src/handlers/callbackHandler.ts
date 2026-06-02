@@ -1,11 +1,17 @@
 import TelegramBot, { CallbackQuery } from 'node-telegram-bot-api';
 import { setUserData, getUserData } from '../types/UserData'
 import { downloadTikTok } from './tiktokHandler';
+import { handlePlanSelection } from '../utils/trainingPlanCreation';
 
 export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) => {
   const chatId = query.message?.chat.id;
   const data = query.data;
   if (!chatId || !data) return;
+
+  if (data.startsWith('plan_') || data.startsWith('confirm_plan_') || data === 'cancel_plan') {
+    await handlePlanSelection(bot, query);
+    return;
+  }
 
   if (data === 'rate_bench') {
     setUserData(chatId, {
@@ -132,10 +138,10 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
 export const callBackHandlerOfHelp = (bot: TelegramBot, query: TelegramBot.CallbackQuery) => {
   const chatId = query.message?.chat.id;
   const data = query.data;
-  //id — айди запроса
-  ///from — данные о пользователе
-  //message — сообщение, к которому прикреплена кнопка
-  //data — то, что передается в callback_data
+  //id - айди запроса
+  ///from - данные о пользователе
+  //message - сообщение, к которому прикреплена кнопка
+  //data - то, что передается в callback_data
 
   if (!chatId || !data) return;
 
@@ -144,7 +150,7 @@ export const callBackHandlerOfHelp = (bot: TelegramBot, query: TelegramBot.Callb
   } else if (data === 'faq_percent') {
     bot.sendMessage(chatId, 'Проценты от 1ПМ нужны, чтобы подобрать правильный вес для тренировок.Предположим,что в твоей программе тренировок указано 70% от 1ПМ на 3 подхода по 5 повторений - это значит что ты чтобы достичь результатов,тебе нужно взять вес равный 70кг(так как это 70% от твоего 1ПМ).');
   } else if (data === 'faq_createprogram') {
-    bot.sendMessage(chatId, 'Команда /createprogram пошагово создаёт программу: дни → проценты → подходы × повторы → 1ПМ.Зачем оно?чтобы исходя из твоей выбранной программы,бот мог составить тебе все по дням,весам и подходам,которые указаны в программе выбранной тобой.');
+    bot.sendMessage(chatId, 'Команда /createprogram пошагово создаёт программу: дни → проценты → подходы × повторы → 1ПМ.Зачем оно?чтобы исходя из твоей выбранной программы,бот мог рассчитать и составить тебе все по дням,весам и подходам,которые указаны в программе выбранной тобой.');
   } else if (data === 'faq_edit') {
     bot.sendMessage(chatId, 'Эдиты можно присылать админу, чтобы он их посмотрел и, возможно, добавил в коллекцию эдитов,чтобы и другие пользователи могли их увидеть используя команду /getedit.');
   }

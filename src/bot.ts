@@ -8,6 +8,7 @@ import { callbackHandler, callBackHandlerOfHelp } from './handlers/callbackHandl
 import { messageHandler } from './handlers/messageHandler';
 import { resetUserData, getUserData, setUserData } from './types/UserData'
 import { startProgramCreation } from './utils/programCreation';
+import { startTrainingPlanCreation } from './utils/trainingPlanCreation';
 import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
 import { getVideoHandler } from './EditedVideos/getEditedVideos/getVideo';
 import express from 'express';
@@ -47,7 +48,7 @@ bot.setMyCommands([
   { command: 'help', description: 'ответы на вопросы' },
   { command: 'createprogram', description: 'Создать тренировочную программу' },
   { command: 'rateexercise', description: 'Оценить силовые показатели' },
-  { command: 'trainingplan', description: 'Ввести готовую программу(в разработке)' },
+  { command: 'trainingplan', description: 'Получить готовую программу тренировок на силу' },
   { command: 'getedit', description: 'Получить случайный эдит' },
   { command: 'sendedit', description: 'Отправить свой эдит админу' },
 ]);
@@ -86,17 +87,8 @@ bot.onText(/\/rateexercise/i, (msg) => {
 
 // /trainingplan
 bot.onText(/\/trainingplan/i, (msg) => {
-  bot.sendMessage(msg.chat.id,
-    'Отправь программу в текстовом виде.\n\n' +
-    '*Пример 1 (проценты):*\n' +
-    'Пн: 70% 4x2\n' +
-    'Ср: 75% 4x2\n' +
-    'Пт: 80% 4x2\n\n' +
-    '*Пример 2 (веса):*\n' +
-    'Жим: 60кг 3x5\n' +
-    'Присед: 80кг 3x5',
-    { parse_mode: 'Markdown' }
-  );
+  const chatId = msg.chat.id;
+  startTrainingPlanCreation(bot, chatId);
 });
 
 

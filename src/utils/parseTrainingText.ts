@@ -7,7 +7,6 @@ export function parseTrainingText(raw: string): TrainingSchedule | null {
   // 80% 2x3 -> // ["70% 3x5", "80% 2x3"]
 
 
-
   const schedule: TrainingSchedule = {};
   let currentDay: string | null = null;
 

@@ -4,6 +4,7 @@ import { trainingMemory } from './trainingMemory';
 import { calculateWeights } from '../utils/calculateWeight';
 import { parseTrainingText, textLooksLikeProgram } from '../utils/parseTrainingText';
 import { handleProgramCreationMessage } from '../utils/programCreation';
+import { handleTrainingPlanMessage } from '../utils/trainingPlanCreation';
 import { Bench } from '../exercises/Bench/Bench';
 import { PullUp } from '../exercises/Pull-Ups/PullUp';
 import { Dips } from '../exercises/Dips/Dips';
@@ -16,7 +17,7 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
 
   const userData = getUserData(chatId);
 
-  const tiktokRegex = /https?:\/\/(www\.)?(tiktok\.com|vm\.tiktok\.com)\/\S+/i;
+  const tiktokRegex = /https?:\/\/([a-z0-9-]+\.)?tiktok\.com\/\S+/i;
   if (tiktokRegex.test(text)) {
     await tiktokHandler(bot, chatId, text);
     return;
@@ -24,7 +25,11 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
 
 
   if (userData.currentStep) {
-    await handleProgramCreationMessage(bot, chatId, text);
+    if (userData.currentStep.startsWith('trainingPlan_')) {
+      await handleTrainingPlanMessage(bot, chatId, text);
+    } else {
+      await handleProgramCreationMessage(bot, chatId, text);
+    }
     return;
   }
 
@@ -81,6 +86,4 @@ export const messageHandler = async (bot: TelegramBot, msg: Message) => {
         return;
     }
   }
-
-
 };

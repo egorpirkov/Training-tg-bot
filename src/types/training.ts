@@ -1,10 +1,9 @@
 // Подход 
 export interface ExerciseEntry {
-  weight: number; // кг или доля (0..1)
-  reps: number;   // кол-во повторений
+  weight: number; 
+  reps: number;   
 }
 
-// Расписание: день-список подходов
 export type TrainingSchedule = Record<string, ExerciseEntry[]>;
 // Record - утилитный тип, который позволяет 
 // создать тип объекта с определенным набором ключей и значений
@@ -67,8 +66,10 @@ export interface UserData {
   programData?: UserProgramData;
   currentStep?: "days" | "percentages" | "sets" | "reps" | "maxWeight" 
              | "addWeek" | "dayPercentReps" | "dayPercentSetsReps" 
-             | "know" | "knowOtherPMs" | null;
+             | "know" | "knowOtherPMs" | "trainingPlan_maxWeight" | null;
              //Текущий шаг юсера
+
+  selectedPlan?: 'pullups' | 'bench_dips' | 'wrists' | 'other1' | 'other2' | null;
 
   // Временные данные чтобы хранить промежуточные значения во время диалога
   tempDays?: string[] | null;
