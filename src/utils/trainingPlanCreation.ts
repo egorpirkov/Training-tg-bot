@@ -1,5 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { getUserData, setUserData } from "../types/UserData";
+import path from "path";
+import fs from "fs";
 
 // округление весов
 function roundWeight(w: number): number {
@@ -11,8 +13,8 @@ function roundWeight(w: number): number {
   return Math.round(w);
 }
 
-// Пометка автора
 const AUTHOR_NOTE = "\n💡 *Примечание от автора:* все эти программы были лично проверены моим собственным телом на практике и они рабочие,если будут программы которые по вашему рабочие пишите в личку используя команду /help\n";
+
 
 interface ExerciseSet {
   pct: number;
@@ -26,6 +28,7 @@ interface PlanTemplate {
   description: string;
   weightPrompt: string;
   weightType: '1pm' | '8pm' | '6-7pm';
+  photo?: string;
   generate: (weight: number) => string;
 }
 
@@ -39,6 +42,7 @@ const templates: Record<string, PlanTemplate> = {
       `*Результат: увеличится дополнительный рабочий вес в подтягиваниях с доп. весом. *`,
     weightPrompt: " *Укажи свой рабочий вес на 8ПМ* (вес,навесив на себя которую,ты сможешь подтянуться на 8 повторении):\n\n Пример: 15кг",
     weightType: '8pm',
+    photo: path.join(process.cwd(), "src", "assets", "PullUps.webp"),
     generate: (weight: number) => {
       let resp = `*Твоя программа: Подтягивания с доп. весом*\n`;
       resp += `*Твой исходный 8ПМ: ${weight} кг*\n`;
@@ -81,6 +85,7 @@ const templates: Record<string, PlanTemplate> = {
       `*Результат: увеличится силовые показатели на жиме/брусьях смотря что вы выбрали.*`,
     weightPrompt: " *Укажи свой 1ПМ* (твой одноповторный максимум):\n\n Пример: 75кг",
     weightType: '1pm',
+    photo: path.join(process.cwd(), "src", "assets", "Bench.webp"),
     generate: (weight: number) => {
       let resp = `*Твоя программа: Жим / Брусья с доп. весом*\n`;
       resp += `*Твой 1ПМ: ${weight} кг*\n`;
@@ -144,9 +149,10 @@ const templates: Record<string, PlanTemplate> = {
       ` Длительность: 6 недель\n` +
       ` Нагрузка: фиксированный вес 6-7 ПМ со сменой подходов и повторений\n` +
       ` Тренировки: Треня 1, Треня 2, Треня 3\n\n` +
-      `*Будет составлена программа на 6 недель который увеличит вес которую вы будете скручивать на кисть или пробуйте другие арм движение к ним тоже подойдет.*`,
+      `*Будет составлена программа на 6 недель который увеличит вес которую вы будете скручивать на кисть или другие арм движение.*`,
     weightPrompt: "*Укажи свой рабочий вес на 6-7 ПМ* (вес,которую ты можешь выполнить макс. на 6-7 повторении):\n\n Пример: 30кг",
     weightType: '6-7pm',
+    photo: path.join(process.cwd(), "src", "assets", "Wrist.avif"),
     generate: (weight: number) => {
       let resp = `*Твоя программа: Скручивание на кисть на одну руку/любые арм движения*\n`;
       resp += `*Твой рабочий вес (6-7 ПМ): ${weight} кг*\n`;
@@ -199,7 +205,7 @@ export async function startTrainingPlanCreation(bot: TelegramBot, chatId: number
 
   await bot.sendMessage(
     chatId,
-    `*Каталог готовых программ тренировок*\n` +
+    `*Каталог готовых программ тренировок для увеличения веса на штанге*\n` +
     AUTHOR_NOTE + `\n` +
     `Выбери программу из меню ниже:`,
     {
@@ -238,10 +244,18 @@ export async function handlePlanSelection(bot: TelegramBot, query: TelegramBot.C
       ]
     };
 
-    await bot.sendMessage(chatId, template.description, {
-      parse_mode: "Markdown",
-      reply_markup: keyboard
-    });
+    if (template.photo && fs.existsSync(template.photo) && fs.statSync(template.photo).size > 100) {
+      await bot.sendPhoto(chatId, fs.createReadStream(template.photo), {
+        caption: template.description,
+        parse_mode: "Markdown",
+        reply_markup: keyboard
+      });
+    } else {
+      await bot.sendMessage(chatId, template.description, {
+        parse_mode: "Markdown",
+        reply_markup: keyboard
+      });
+    }
     return;
   }
 
