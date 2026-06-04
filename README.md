@@ -1,4 +1,4 @@
-# 💪 @@MentzerMike_bot — Умный фитнес-помощник в Telegram
+# 💪 @MentzerMike_bot — Умный фитнес-помощник в Telegram
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
