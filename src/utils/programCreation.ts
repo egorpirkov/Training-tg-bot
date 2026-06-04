@@ -39,7 +39,7 @@ function generateProgramText(programData: UserProgramData) {
         }
 
         const weightKg = Math.round((percentage / 100) * maxWeight);
-        resp += `  ${index + 1}. ${weightKg} кг (${description}) — ${cfg.sets}×${cfg.reps}\n`;
+        resp += `  ${index + 1}. ${weightKg} кг (${description}) - ${cfg.sets}×${cfg.reps}\n`;
       });
       resp += `\n`;
     }
@@ -93,7 +93,6 @@ function parseSegment(segment: string): DayConfig | null {
   return null;
 }
 
-// Первый шаг запуск программы
 export async function startProgramCreation(bot: TelegramBot, chatId: number) {
   setUserData(chatId, {
     programData: { weeks: [] },
@@ -186,7 +185,7 @@ export async function handleProgramCreationMessage(
 
       for (let line of lines) {
 
-        line = line.replace(/^(пн|вт|ср|чт|пт|сб|вс|понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)\s*[:\-–—]?\s*/i, "");
+        line = line.replace(/^(пн|вт|ср|чт|пт|сб|вс|понедельник|вторник|среда|четверг|пятница|суббота|воскресенье)\s*[:\-–-]?\s*/i, "");
 
         const segments = line.split(/[;\n]+/).map((s) => s.trim()).filter(Boolean);
         const dayConfigs: DayConfig[] = [];
@@ -275,8 +274,8 @@ export async function handleProgramCreationMessage(
         await bot.sendMessage(
           chatId,
           " 🤔*Добавить ещё одну неделю?*\n\n" +
-          " *Да* — добавлю новую неделю\n" +
-          " *Нет* — завершаю программу",
+          " *Да* - добавлю новую неделю\n" +
+          " *Нет* - завершаю программу",
           { parse_mode: "Markdown" }
         );
         return;
@@ -293,7 +292,7 @@ export async function handleProgramCreationMessage(
           `💪 *Отлично! Теперь укажи свой ${targetPm}ПМ:*\n\n` +
           ` Пример: 50кг\n` +
           ` Или: 120кг\n\n` +
-          `💡 *${targetPm}ПМ* — максимальный вес, которую ты можешь выполнить на ${targetPm} раз`,
+          `💡 *${targetPm}ПМ* - максимальный вес, которую ты можешь выполнить на ${targetPm} раз`,
           { parse_mode: "Markdown" }
         );
       } else {
@@ -302,7 +301,7 @@ export async function handleProgramCreationMessage(
           "💪 *Отлично! Теперь укажи свой 1ПМ:*\n\n" +
           " Пример: 50кг\n" +
           " Или: 120кг\n\n" +
-          "💡 *1ПМ* — максимальный вес, которую ты можешь выполнить на 1 раз",
+          "💡 *1ПМ* - максимальный вес, которую ты можешь выполнить на 1 раз",
           { parse_mode: "Markdown" }
         );
       }
@@ -378,8 +377,8 @@ export async function handleProgramCreationMessage(
       await bot.sendMessage(
         chatId,
         " 🤔 *Добавить ещё одну неделю?*\n\n" +
-        " *Да* — добавлю новую неделю\n" +
-        " *Нет* — завершаю программу",
+        " *Да* - добавлю новую неделю\n" +
+        " *Нет* - завершаю программу",
         { parse_mode: "Markdown" }
       );
       return;

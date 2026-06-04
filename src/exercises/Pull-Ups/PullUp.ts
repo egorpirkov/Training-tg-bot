@@ -54,7 +54,7 @@ export const PullUp = async (bot: TelegramBot, msg: Message) => {
         evaluation = 'Неплохой результат! Продолжай тренироваться!';
       }
 
-      // Женский вариант 
+      // Женский варик
       if (gender === 'female') {
         evaluation += ' ' + getRandom(femaleVariants).trim(); // trim() на всякий случай уберет лишние пробелы
       }
@@ -66,7 +66,7 @@ export const PullUp = async (bot: TelegramBot, msg: Message) => {
       setUserData(chatId, { 
         ratingMode: false, 
         ratingExercise: undefined, 
-        PullUp: undefined // СБРОС подтягиваний для будущих тестов
+        PullUp: undefined // СБРОС подтягиваний 
       });
     } else {
       await bot.sendMessage(chatId, 'Пожалуйста, введи корректное число подтягиваний.');

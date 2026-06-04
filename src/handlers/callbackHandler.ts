@@ -39,7 +39,7 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
  if (data.startsWith('tiktok_video_') || data.startsWith('tiktok_audio_')) {
     const type = data.startsWith('tiktok_video_') ? 'video' : 'audio';
     const url = decodeURIComponent(data.replace(`tiktok_${type}_`, ''));
-    await bot.answerCallbackQuery(query.id);
+    await bot.answerCallbackQuery(query.id).catch(() => {});
     await downloadTikTok(bot, chatId, url, type);
     return;
   }
@@ -146,7 +146,7 @@ export const callBackHandlerOfHelp = (bot: TelegramBot, query: TelegramBot.Callb
   if (!chatId || !data) return;
 
   if (data === 'faq_1pm') {
-    bot.sendMessage(chatId, '1ПМ — это твой максимум в одном повторении (One Rep Max).Допустим,ты жмешь свой максимальный вес,предположим что это 100кг на 1 повторение.Это и есть твой 1ПМ.');
+    bot.sendMessage(chatId, '1ПМ - это твой максимум в одном повторении (One Rep Max).Допустим,ты жмешь свой максимальный вес,предположим что это 100кг на 1 повторение.Это и есть твой 1ПМ.');
   } else if (data === 'faq_percent') {
     bot.sendMessage(chatId, 'Проценты от 1ПМ нужны, чтобы подобрать правильный вес для тренировок.Предположим,что в твоей программе тренировок указано 70% от 1ПМ на 3 подхода по 5 повторений - это значит что ты чтобы достичь результатов,тебе нужно взять вес равный 70кг(так как это 70% от твоего 1ПМ).');
   } else if (data === 'faq_createprogram') {
@@ -154,5 +154,5 @@ export const callBackHandlerOfHelp = (bot: TelegramBot, query: TelegramBot.Callb
   } else if (data === 'faq_edit') {
     bot.sendMessage(chatId, 'Эдиты можно присылать админу, чтобы он их посмотрел и, возможно, добавил в коллекцию эдитов,чтобы и другие пользователи могли их увидеть используя команду /getedit.');
   }
-  bot.answerCallbackQuery(query.id);
+  bot.answerCallbackQuery(query.id).catch(() => {});
 }

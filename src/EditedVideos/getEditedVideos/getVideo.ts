@@ -8,7 +8,7 @@ export function getVideoHandler(bot: TelegramBot) {
         const chatId = msg.chat.id;
         waitingForVideo.add(chatId);
         //Этот пользователь (с таким chatId) сейчас
-        // в состоянии ожидания — он должен прислать видео
+        // в состоянии ожидания - он должен прислать видео
 
         bot.sendMessage(chatId, "Отправь свой эдит, и я передам его администратору.")   ;
     });

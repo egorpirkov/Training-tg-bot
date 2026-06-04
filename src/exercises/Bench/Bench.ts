@@ -61,7 +61,7 @@ export const Bench = async (bot: TelegramBot, msg: Message) => {
         evaluation = 'Хороший результат! Продолжай тренироваться!';
       }
 
-      // Женский вариант
+      // Женский варик
       if (gender === 'female') {
         evaluation += ' ' + getRandom(femaleBenchVariants).trim();
       }
