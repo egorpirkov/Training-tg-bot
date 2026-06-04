@@ -16,7 +16,7 @@ export async function sendRandomVideo(bot: TelegramBot, chatId: number) {
   }
 
   // Отправляем временное сообщение о загрузке
-  const loadingMsg = await bot.sendMessage(chatId, " *Подожди, достаю эдит из базы...*", { parse_mode: "Markdown" });
+  const loadingMsg = await bot.sendMessage(chatId, " *Достаю эдит из хранилище...*", { parse_mode: "Markdown" });
 
   if (usedIndexes.length >= files.length) {
     usedIndexes = [];

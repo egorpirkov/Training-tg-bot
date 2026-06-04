@@ -66,10 +66,18 @@ export interface UserData {
   programData?: UserProgramData;
   currentStep?: "days" | "percentages" | "sets" | "reps" | "maxWeight" 
              | "addWeek" | "dayPercentReps" | "dayPercentSetsReps" 
-             | "know" | "knowOtherPMs" | "trainingPlan_maxWeight" | null;
+             | "know" | "knowOtherPMs" | "trainingPlan_maxWeight" 
+             | "calc1pm_weight" | "calc1pm_bw" | "calc1pm_extra" | "calc1pm_reps" | null;
              //Текущий шаг юсера
 
   selectedPlan?: 'pullups' | 'bench_dips' | 'wrists' | 'other1' | 'other2' | null;
+
+  // Данные калькулятора 1ПМ
+  calc1pm_exercise?: 'bench' | 'pullups' | 'dips' | 'arm_bicep' | null;
+  calc1pm_bw?: number;
+  calc1pm_extra?: number;
+  calc1pm_weight?: number;
+  calc1pm_reps?: number;
 
   // Временные данные чтобы хранить промежуточные значения во время диалога
   tempDays?: string[] | null;

@@ -1,4 +1,4 @@
-# 💪 @kachkovi_bot — Умный фитнес-помощник в Telegram
+# 💪 @@MentzerMike_bot — Умный фитнес-помощник в Telegram
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
@@ -12,7 +12,7 @@
 
 **Примеры запросов, на которые отвечает бот:**
 * 💬 *«Сколько мой максимум, если пожал 100 на 10?»*
-* 💬 *«Норм ли 140 в 15 лет?»*
+* 💬 *«Норм ли 140 кг жим в 15 лет?»*
 
 ---
 

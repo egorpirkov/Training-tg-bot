@@ -2,6 +2,7 @@ import TelegramBot, { CallbackQuery } from 'node-telegram-bot-api';
 import { setUserData, getUserData } from '../types/UserData'
 import { downloadTikTok } from './tiktokHandler';
 import { handlePlanSelection } from '../utils/trainingPlanCreation';
+import { handleCalc1pmCallback } from '../utils/calc1pm';
 
 export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) => {
   const chatId = query.message?.chat.id;
@@ -10,6 +11,11 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
 
   if (data.startsWith('plan_') || data.startsWith('confirm_plan_') || data === 'cancel_plan') {
     await handlePlanSelection(bot, query);
+    return;
+  }
+
+  if (data.startsWith('calc1pm_type_')) {
+    await handleCalc1pmCallback(bot, query);
     return;
   }
 

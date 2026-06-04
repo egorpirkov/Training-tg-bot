@@ -9,6 +9,7 @@ import { messageHandler } from './handlers/messageHandler';
 import { resetUserData, getUserData, setUserData } from './types/UserData'
 import { startProgramCreation } from './utils/programCreation';
 import { startTrainingPlanCreation } from './utils/trainingPlanCreation';
+import { startCalc1pm } from './utils/calc1pm';
 import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
 import { getVideoHandler } from './EditedVideos/getEditedVideos/getVideo';
 import express from 'express';
@@ -49,6 +50,7 @@ bot.setMyCommands([
   { command: 'createprogram', description: 'Создать тренировочную программу' },
   { command: 'rateexercise', description: 'Оценить силовые показатели' },
   { command: 'trainingplan', description: 'Получить готовую программу тренировок на силу' },
+  { command: 'calc1pm', description: 'Рассчитать 1ПМ (одноповторный максимум)' },
   { command: 'getedit', description: 'Получить случайный эдит' },
   { command: 'sendedit', description: 'Отправить свой эдит админу' },
 ]);
@@ -89,6 +91,12 @@ bot.onText(/\/rateexercise/i, (msg) => {
 bot.onText(/\/trainingplan/i, (msg) => {
   const chatId = msg.chat.id;
   startTrainingPlanCreation(bot, chatId);
+});
+
+// /calc1pm
+bot.onText(/\/calc1pm/i, (msg) => {
+  const chatId = msg.chat.id;
+  startCalc1pm(bot, chatId);
 });
 
 
