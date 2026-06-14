@@ -5,7 +5,7 @@
 В гитхабе изменить описание и сделать приватным некоторые проекты и изменить редми
 
 
-npm run dev --prefix frontend
+npm run dev --prefix MiniApp
 npm run dev
 
 

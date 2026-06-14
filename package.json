@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "bot/bot.js",
   "scripts": {
-    "build": "tsc && npm install --prefix frontend && npm run build --prefix frontend",
+    "build": "tsc && npm install --prefix MiniApp && npm run build --prefix MiniApp",
     "start": "pip install yt-dlp --break-system-packages && node dist/bot.js",
     "dev": "ts-node src/bot.ts",
     "postinstall": "node -e \"if (process.platform !== 'win32') { require('child_process').execSync('npm rebuild sqlite3 --build-from-source', { stdio: 'inherit' }); }\""
