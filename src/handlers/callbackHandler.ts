@@ -3,6 +3,7 @@ import { setUserData, getUserData } from '../types/UserData'
 import { downloadTikTok } from './tiktokHandler';
 import { handlePlanSelection } from '../utils/trainingPlanCreation';
 import { handleCalc1pmCallback } from '../utils/calc1pm';
+import { resetUserEdits, sendRandomVideo } from '../EditedVideos/sendEditedVideos/sendVideo';
 
 export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) => {
   const chatId = query.message?.chat.id;
@@ -137,8 +138,16 @@ export const callbackHandler = async (bot: TelegramBot, query: CallbackQuery) =>
     return;
   }
 
+  if (data === 'reset_edits') {
+    resetUserEdits(chatId);
+    await bot.answerCallbackQuery(query.id, { text: 'Сброшено! Показываю сначала...' }).catch(() => {});
+    await sendRandomVideo(bot, chatId);
+    return;
+  }
+
   callBackHandlerOfHelp(bot, query);
 };
+
 
 
 export const callBackHandlerOfHelp = (bot: TelegramBot, query: TelegramBot.CallbackQuery) => {

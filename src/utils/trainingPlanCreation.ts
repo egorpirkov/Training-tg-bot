@@ -2,15 +2,179 @@ import TelegramBot from "node-telegram-bot-api";
 import { getUserData, setUserData } from "../types/UserData";
 import path from "path";
 import fs from "fs";
+import { saveActiveProgram } from "./db";
+
+// Вспомогательная функция для генерации структуры и сохранения готового шаблона программы в БД
+async function saveTemplateProgramToDb(chatId: number, planKey: string, weight: number) {
+  const unifiedWeeks: any[] = [];
+  
+  if (planKey === "pullups") {
+    for (let w = 1; w <= 9; w++) {
+      const block = Math.floor((w - 1) / 3);
+      const blockWeight = roundWeight(weight + block * 2.5);
+      const weekInBlock = (w - 1) % 3 + 1;
+      const sets = weekInBlock === 1 ? 3 : 4;
+      const reps = weekInBlock === 3 ? 6 : 5;
+      
+      const dayExercises = [{
+        name: "Подтягивания с доп. весом",
+        sets: sets,
+        reps: reps,
+        weightKg: blockWeight,
+        note: `Блок ${block + 1}`
+      }];
+
+      unifiedWeeks.push({
+        weekIndex: w - 1,
+        days: [
+          { dayName: "пн", exercises: dayExercises },
+          { dayName: "ср", exercises: dayExercises },
+          { dayName: "пт", exercises: dayExercises }
+        ]
+      });
+    }
+  } else if (planKey === "bench_dips") {
+    const weeksData: Record<number, Record<string, any[]>> = {
+      1: {
+        пн: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 2, reps: 5 }, { pct: 72, sets: 3, reps: 5 }],
+        ср: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 72, sets: 2, reps: 5 }, { pct: 75, sets: 2, reps: 6 }, { pct: 80, sets: 2, reps: 3 }, { pct: 85, sets: 3, reps: 2 }],
+        пт: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 72, sets: 4, reps: 5 }]
+      },
+      2: {
+        пн: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 7, reps: 3, note: "(взрыв)" }],
+        ср: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 72, sets: 1, reps: 5 }, { pct: 75, sets: 2, reps: 4 }, { pct: 80, sets: 2, reps: 3 }, { pct: 85, sets: 6, reps: 2 }],
+        пт: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 72, sets: 6, reps: 5 }]
+      },
+      3: {
+        пн: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 7, reps: 3, note: "(взрыв)" }],
+        ср: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 72, sets: 1, reps: 5 }, { pct: 75, sets: 2, reps: 5 }, { pct: 80, sets: 2, reps: 4 }, { pct: 85, sets: 2, reps: 3 }, { pct: 90, sets: 3, reps: 2 }],
+        пт: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 2, reps: 5 }, { pct: 72, sets: 2, reps: 5 }, { pct: 75, sets: 4, reps: 5 }, { pct: 72, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }]
+      },
+      4: {
+        пн: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 62, sets: 7, reps: 3, note: "(взрыв)" }],
+        ср: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 75, sets: 2, reps: 5 }, { pct: 80, sets: 2, reps: 4 }, { pct: 85, sets: 1, reps: 3 }, { pct: 90, sets: 3, reps: 2 }, { pct: 80, sets: 1, reps: 4 }, { pct: 75, sets: 1, reps: 5 }],
+        пт: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 72, sets: 1, reps: 5 }, { pct: 75, sets: 4, reps: 5 }]
+      },
+      5: {
+        пн: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 65, sets: 7, reps: 3, note: "(взрыв)" }],
+        ср: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 65, sets: 1, reps: 5 }, { pct: 75, sets: 1, reps: 5 }, { pct: 80, sets: 1, reps: 3 }, { pct: 85, sets: 1, reps: 2 }, { pct: 90, sets: 1, reps: 2 }, { pct: 95, sets: 1, reps: 2 }, { pct: 100, sets: 1, reps: "1-2" }],
+        пт: [{ pct: 40, sets: 1, reps: 10 }, { pct: 50, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 75, sets: 5, reps: 5 }]
+      },
+      6: {
+        пн: [{ pct: 40, sets: 1, reps: 10 }, { pct: 55, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 67, sets: 7, reps: 3, note: "(взрыв)" }],
+        ср: [{ pct: 40, sets: 1, reps: 10 }, { pct: 55, sets: 1, reps: 5 }, { pct: 60, sets: 1, reps: 5 }, { pct: 75, sets: 1, reps: 5 }, { pct: 80, sets: 1, reps: 4 }, { pct: 85, sets: 1, reps: 3 }, { pct: 90, sets: 2, reps: 2 }, { pct: 93, sets: 3, reps: 2 }],
+        пт: [{ pct: 40, sets: 1, reps: 10 }, { pct: 55, sets: 1, reps: 5 }, { pct: 65, sets: 2, reps: 5 }, { pct: 72, sets: 2, reps: 5 }, { pct: 80, sets: 6, reps: 4 }]
+      }
+    };
+
+    for (let w = 1; w <= 6; w++) {
+      const daysList: any[] = [];
+      const days = weeksData[w];
+      for (const [dayName, dayExs] of Object.entries(days)) {
+        const exercises = dayExs.map((ex, idx) => {
+          const wKg = roundWeight((ex.pct / 100) * weight);
+          return {
+            name: "Жим / Брусья",
+            sets: ex.sets,
+            reps: ex.reps,
+            weightKg: wKg,
+            note: `${ex.pct}%${ex.note ? ' ' + ex.note : ''}`
+          };
+        });
+        daysList.push({ dayName: dayName.toLowerCase(), exercises });
+      }
+      unifiedWeeks.push({
+        weekIndex: w - 1,
+        days: daysList
+      });
+    }
+  } else if (planKey === "wrists") {
+    const weeksData: Record<number, string[]> = {
+      1: ["3,4,3,3", "4x2", "3x4,1x3"],
+      2: ["3,4,3,4,3", "6x2", "5x4"],
+      3: ["3,4,3,4", "5x2", "4x4"],
+      4: ["3,4,3,4,3,4", "8x2", "6x4"],
+      5: ["3,4,3,4,3,2", "7x2", "5x4,1x3"],
+      6: ["3,4,3", "3x2", "3x4"]
+    };
+
+    const parseWristsDay = (dayStr: string, weightKg: number) => {
+      const exercises: any[] = [];
+      
+      if (dayStr.includes('x') || dayStr.includes('×')) {
+        const parts = dayStr.split(',');
+        const setsList: number[] = [];
+        parts.forEach(part => {
+          const m = part.match(/^(\d+)[x×](\d+)$/);
+          if (m) {
+            const s = parseInt(m[1]);
+            const r = parseInt(m[2]);
+            for (let i = 0; i < s; i++) {
+              setsList.push(r);
+            }
+          } else {
+            const r = parseInt(part);
+            if (!isNaN(r)) setsList.push(r);
+          }
+        });
+        
+        exercises.push({
+          name: "Скручивания на кисть",
+          sets: setsList.length,
+          reps: dayStr,
+          weightKg: weightKg,
+          repsList: setsList
+        });
+      } else {
+        const repsList = dayStr.split(',').map(s => parseInt(s)).filter(r => !isNaN(r));
+        exercises.push({
+          name: "Скручивания на кисть",
+          sets: repsList.length,
+          reps: dayStr,
+          weightKg: weightKg,
+          repsList: repsList
+        });
+      }
+      return exercises;
+    };
+
+    for (let w = 1; w <= 6; w++) {
+      const days = weeksData[w];
+      const wWeight = roundWeight(weight);
+      unifiedWeeks.push({
+        weekIndex: w - 1,
+        days: [
+          { dayName: "пн", exercises: parseWristsDay(days[0], wWeight) },
+          { dayName: "ср", exercises: parseWristsDay(days[1], wWeight) },
+          { dayName: "пт", exercises: parseWristsDay(days[2], wWeight) }
+        ]
+      });
+    }
+  }
+
+  const titles: Record<string, string> = {
+    pullups: "Подтягивания с доп. весом",
+    bench_dips: "Жим / Брусья с доп. весом",
+    wrists: "Скручивание на кисть"
+  };
+
+  const unifiedProgram = {
+    title: titles[planKey] || "Программа тренировок",
+    weeks: unifiedWeeks
+  };
+
+  await saveActiveProgram(chatId, unifiedProgram.title, unifiedProgram);
+}
 
 // округление весов
 function roundWeight(w: number): number {
-  const floor = Math.floor(w);
-  const diff = w - floor;
+  const rounded = Math.round(w * 100) / 100;
+  const floor = Math.floor(rounded);
+  const diff = rounded - floor;
   if (Math.abs(diff - 0.5) < 0.01) {
-    return w;
+    return rounded;
   }
-  return Math.round(w);
+  return Math.round(rounded);
 }
 
 const AUTHOR_NOTE = "\n💡 *Примечание от автора:* все эти программы были лично проверены моим собственным телом на практике и благодаря им добавил в весах.Если будут программы которые рабочие пишите в лс используя команду /help\n";
@@ -173,7 +337,10 @@ const templates: Record<string, PlanTemplate> = {
       `*Будет составлена программа на 6 недель который увеличит вес которую вы будете скручивать на кисть или другие арм движение.*`,
     weightPrompt: "*Укажи свой рабочий вес на 6-7 ПМ* (вес,которую ты можешь выполнить макс. на 6-7 повторении):\n\n Пример: 30кг",
     weightType: '6-7pm',
-    photo: path.join(process.cwd(), "src", "assets", "Wrist.webp"),
+    photo: [
+      path.join(process.cwd(), "src", "assets", "Wrist.webp"),
+      path.join(process.cwd(), "src", "assets", "Pronator.png")
+    ],
     generate: (weight: number) => {
       let resp = `*Вот твоя программа на основе твоего 6-7 ПМ: ${weight} кг*\n\n`;
 
@@ -359,9 +526,16 @@ export async function handleTrainingPlanMessage(bot: TelegramBot, chatId: number
   const template = templates[u.selectedPlan];
   if (!template) return;
 
+  const planKey = u.selectedPlan;
+
   setUserData(chatId, {
     currentStep: null,
     selectedPlan: null
+  });
+
+  // Сохраняем готовую программу в БД
+  saveTemplateProgramToDb(chatId, planKey, weight).catch((err) => {
+    console.error("Ошибка при сохранении готовой программы в БД:", err);
   });
 
   const programText = template.generate(weight);
@@ -370,10 +544,24 @@ export async function handleTrainingPlanMessage(bot: TelegramBot, chatId: number
     parse_mode: "Markdown"
   });
 
+  const webAppUrl = process.env.WEBAPP_URL || 'https://training-tg-bot-1.onrender.com/';
+
   await bot.sendMessage(
     chatId,
     "🎉 *ПРОГРАММА СОЗДАНА!*\n\n" +
-    " *Удачи в тренировках*",
-    { parse_mode: "Markdown" }
+    "Она автоматически добавлена в ваш дневник. Нажмите кнопку ниже, чтобы открыть её и начать отмечать подходы! 💪",
+    {
+      parse_mode: "Markdown",
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Открыть Дневник 🏋️‍♂️",
+              web_app: { url: webAppUrl }
+            }
+          ]
+        ]
+      }
+    }
   );
 }

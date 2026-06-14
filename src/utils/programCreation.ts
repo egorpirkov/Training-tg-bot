@@ -1,13 +1,52 @@
 import TelegramBot from "node-telegram-bot-api";
 import { getUserData, setUserData } from "../types/UserData";
 import { UserProgramData, DayConfig, ProgramConfig, repMaxTable } from "../types/training";
+import { saveActiveProgram } from "./db";
 
-// Функция для преобразования ПМ в проценты то есть 6ПМ это 85%
+async function saveCustomProgramToDb(chatId: number, programData: UserProgramData) {
+  const { weeks, maxWeight } = programData;
+  if (!weeks || !weeks.length || !maxWeight) return;
+
+  const unifiedWeeks = weeks.map((week, wi) => {
+    const daysList = [];
+    for (const [dayName, configs] of Object.entries(week)) {
+      const exercisesList = configs.map((cfg, idx) => {
+        let percentage = cfg.percentage;
+        if (!percentage && cfg.pm) {
+          percentage = repMaxTable[cfg.pm] || 85;
+        }
+        const weightKg = Math.round(((percentage || 0) / 100) * maxWeight);
+        return {
+          name: `Упражнение ${idx + 1}`,
+          sets: cfg.sets,
+          reps: cfg.reps,
+          weightKg: weightKg,
+          note: cfg.pm ? `ПМ${cfg.pm}` : `${cfg.percentage}%`
+        };
+      });
+      daysList.push({
+        dayName: dayName.toLowerCase(),
+        exercises: exercisesList
+      });
+    }
+    return {
+      weekIndex: wi,
+      days: daysList
+    };
+  });
+
+  const unifiedProgram = {
+    title: "Индивидуальная программа",
+    weeks: unifiedWeeks
+  };
+
+  await saveActiveProgram(chatId, "Индивидуальная программа", unifiedProgram);
+}
+
 function pmToPercentage(pm: number): number {
   return repMaxTable[pm] || 85; 
 }
 
-// Генерация текста программы для вывода пользователю
 function generateProgramText(programData: UserProgramData) {
   const { weeks, maxWeight } = programData;
   if (!weeks || !weeks.length || !maxWeight) {
@@ -23,14 +62,14 @@ function generateProgramText(programData: UserProgramData) {
     for (const [day, configs] of Object.entries(week)) {
       resp += `*${day.toUpperCase()}*\n`;
 
-      configs.forEach((cfg, index) => {// sfg это конфиг упражнения(pm:5,sets:2,reps:8)
+      configs.forEach((cfg, index) => {
         let percentage: number;
         let description = '';
 
         if (cfg.percentage) {
           percentage = cfg.percentage;
           description = `${cfg.percentage}%`;
-        } else if (cfg.pm) { // если есть кол-во повторов до отказа,переводим через pmToPercentage,типо pm=5 > 87%
+        } else if (cfg.pm) { 
           percentage = pmToPercentage(cfg.pm);
           description = `ПМ${cfg.pm}`;
         } else {
@@ -48,7 +87,6 @@ function generateProgramText(programData: UserProgramData) {
   return resp;
 }
 
-// Функция парсинга одного сегмента тренировки (например, 2x60%/5 или 6ПМ 3x5)
 function parseSegment(segment: string): DayConfig | null {
   segment = segment.trim().toLowerCase();
 
@@ -101,8 +139,8 @@ export async function startProgramCreation(bot: TelegramBot, chatId: number) {
 
   await bot.sendMessage(
     chatId,
-    "🏋️ *Создадим тебе план на основе твоей программы!*\n\n" +
-    "📅 *В какие дни тренируешься?*\n" +
+    " *Рассчитаем тебе план на основе твоей программы!*\n\n" +
+    " *В какие дни тренируешься?*\n" +
     "  Примеры ввода:\n" +
     "  - пн ср пт\n" +
     "  - вт, чт, сб\n" +
@@ -149,7 +187,7 @@ export async function handleProgramCreationMessage(
         await bot.sendMessage(
           chatId,
           "🤔 *Не понял дни*\n\n" +
-          "💡 *Примеры ввода:*\n" +
+          " *Примеры ввода:*\n" +
           " пн ср пт\n" +
           " вт, чт, сб\n" +
           " понедельник, среда, пятница",
@@ -173,7 +211,7 @@ export async function handleProgramCreationMessage(
         "   - 80% 4×3 \n" +
         "   - 6ПМ 3×5 \n" +
         "   - 40%/\u200B10 ; 2x60%/\u200B5 ; 3x72%/\u200B5 (или более обьемные тренировки)\n\n" +
-        "💡 *Каждый день пиши с новой строки (через Enter)*\n\n",
+        " *Каждый день пиши с новой строки (через Enter)*\n\n",
         { parse_mode: "Markdown" }
       );
       return;
@@ -227,9 +265,9 @@ export async function handleProgramCreationMessage(
         await bot.sendMessage(
           chatId,
           `🤔 *Количество не совпадает!*\n\n` +
-          `📅 Ты выбрал ${u.tempDays.length} дня/дней: *${u.tempDays.join(', ')}*\n` +
-          `📝 А прислал ${configs.length} нагрузок.\n\n` +
-          `💡 *Впиши нагрузку для каждого из дней (по одной строке на день):*\n` +
+          ` Ты выбрал ${u.tempDays.length} дня/дней: *${u.tempDays.join(', ')}*\n` +
+          ` А прислал ${configs.length} нагрузок.\n\n` +
+          ` *Впиши нагрузку для каждого из дней (по одной строке на день):*\n` +
           helpText,
           { parse_mode: "Markdown" }
         );
@@ -289,19 +327,19 @@ export async function handleProgramCreationMessage(
       if (targetPm && targetPm > 1) {
         await bot.sendMessage(
           chatId,
-          `💪 *Отлично! Теперь укажи свой ${targetPm}ПМ:*\n\n` +
+          ` *Отлично! Теперь укажи свой ${targetPm}ПМ:*\n\n` +
           ` Пример: 50кг\n` +
           ` Или: 120кг\n\n` +
-          `💡 *${targetPm}ПМ* - максимальный вес, которую ты можешь выполнить на ${targetPm} раз`,
+          ` *${targetPm}ПМ* - максимальный вес, которую ты можешь выполнить на ${targetPm} раз`,
           { parse_mode: "Markdown" }
         );
       } else {
         await bot.sendMessage(
           chatId,
-          "💪 *Отлично! Теперь укажи свой 1ПМ:*\n\n" +
+          " *Отлично! Теперь укажи свой 1ПМ:*\n\n" +
           " Пример: 50кг\n" +
           " Или: 120кг\n\n" +
-          "💡 *1ПМ* - максимальный вес, которую ты можешь выполнить на 1 раз",
+          " *1ПМ* - максимальный вес, которую ты можешь выполнить на 1 раз",
           { parse_mode: "Markdown" }
         );
       }
@@ -314,13 +352,12 @@ export async function handleProgramCreationMessage(
         await bot.sendMessage(
           chatId,
           "🤔 *Нужно число!*\n\n" +
-          "💡 *Пример:* 50 или 120",
+          " *Пример:* 50 или 120",
           { parse_mode: "Markdown" }
         );
         return;
       }
 
-      // Ищем ПМ, который мы просили ввести
       let targetPm: number | null = null;
       if (u.tempDayConfigs) {
         for (const dayConfigs of u.tempDayConfigs) {
@@ -338,7 +375,6 @@ export async function handleProgramCreationMessage(
 
       const pd: UserProgramData = u.programData || { weeks: [] };
 
-      // Создаем конфиг для недели
       const weekConfig: ProgramConfig = {};
       if (u.tempDays && u.tempDayConfigs) {
         u.tempDays.forEach((day, index) => {
@@ -350,12 +386,11 @@ export async function handleProgramCreationMessage(
               weekConfig[day] = [val as any];
             }
           }
-        });//создание готового конфига недели
+        });
       }
 
       pd.weeks.push(weekConfig);
 
-      // Если просили конкретный ПМ (например, 6ПМ), рассчитываем 1ПМ
       if (targetPm && targetPm > 1) {
         const pct = pmToPercentage(targetPm);
         pd.maxWeight = Math.round(max / (pct / 100));
@@ -389,12 +424,19 @@ export async function handleProgramCreationMessage(
         setUserData(chatId, { currentStep: "days" });
         await bot.sendMessage(
           chatId,
-          "📅 *Укажи дни для следующей недели:*\n\n" +
-          "💡 Пример: пн, ср, пт",
+          " *Укажи дни для следующей недели:*\n\n" +
+          " Пример: пн, ср, пт",
           { parse_mode: "Markdown" }
         );
       } else {
         setUserData(chatId, { currentStep: null });
+
+        if (u.programData) {
+          saveCustomProgramToDb(chatId, u.programData).catch((err) => {
+            console.error("Ошибка при сохранении кастомной программы в БД:", err);
+          });
+        }
+
         await bot.sendMessage(
           chatId,
           "🎉 *ПРОГРАММА СОЗДАНА!*\n\n" +

@@ -1,0 +1,2287 @@
+/* ===== KACHBOT APP DESIGN SYSTEM ===== */
+
+/* --- Анимация загрузки --- */
+.app-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: #fff;
+  gap: 16px;
+}
+
+.loader-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.2);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- Ошибки подключения --- */
+.app-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.error-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.05);
+  animation: slideIn 0.3s ease;
+}
+
+.error-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.error-card h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.error-card p {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* --- Основной контейнер --- */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--bg-main);
+  padding-bottom: 90px; /* Отступ для нижней навигации */
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+}
+
+.container {
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+/* --- Шапка приложения --- */
+.app-header {
+  background: rgba(6, 9, 19, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-emoji {
+  font-size: 26px;
+  filter: drop-shadow(0 2px 8px rgba(2, 132, 199, 0.4));
+}
+
+.header-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  font-size: 11px;
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.header-tonnage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.tonnage-label {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.tonnage-value {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-secondary);
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+
+/* --- Шапка: кнопка справки --- */
+.btn-help {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-help:hover, .btn-help:active {
+  background: rgba(2, 132, 199, 0.1);
+  border-color: rgba(2, 132, 199, 0.3);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* --- Главное содержимое --- */
+.app-content {
+  flex-grow: 1;
+  padding-top: 16px;
+}
+
+.weeks-carousel {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 4px 12px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+  scroll-snap-type: x mandatory;
+}
+
+.weeks-carousel::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.week-btn {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  color: var(--color-text-muted);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  scroll-snap-align: start;
+}
+
+.week-btn.active {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #06b6d4 100%);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.week-btn:active {
+  transform: scale(0.95);
+}
+
+.days-selector {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin: 4px 0 16px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-color);
+  padding: 4px;
+  border-radius: 14px;
+}
+
+.day-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  padding: 10px 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-btn.active {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.day-postponed-dot {
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  color: #f59e0b;
+  font-size: 16px;
+  line-height: 0;
+}
+
+/* --- Карточка тренировки --- */
+.workout-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.workout-day-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.postpone-badge {
+  font-size: 10px;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin-top: 6px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.workout-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workout-tonnage {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-secondary);
+  background: rgba(6, 182, 212, 0.06);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: 16px;
+  padding: 4px 10px;
+}
+
+.btn-postpone {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  color: var(--color-text-muted);
+  border-radius: 12px;
+  padding: 0 10px;
+  height: 32px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-postpone:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.btn-postpone:active {
+  transform: scale(0.92);
+}
+
+/* --- Список упражнений --- */
+.exercises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.exercise-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exercise-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  border-left: 3px solid var(--color-primary);
+  padding-left: 10px;
+  letter-spacing: 0.3px;
+}
+
+/* --- Списки подходов (Табличный вид) --- */
+.sets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sets-header-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.8px;
+  opacity: 0.8;
+}
+
+.sets-header-row span:nth-child(4) {
+  text-align: right;
+  padding-right: 4px;
+}
+
+.set-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr 1fr;
+  align-items: center;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.set-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Выполненный подход */
+.set-row.completed {
+  background: rgba(16, 185, 129, 0.04);
+  border-color: rgba(16, 185, 129, 0.15);
+  box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.02);
+}
+
+.set-row.completed .set-num {
+  color: var(--color-success);
+}
+
+.set-row.completed .set-weight, 
+.set-row.completed .set-reps {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.set-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.set-weight {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.set-reps {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.set-note {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(2, 132, 199, 0.08);
+  border: 1px solid rgba(2, 132, 199, 0.15);
+  border-radius: 6px;
+  padding: 2px 6px;
+  text-transform: uppercase;
+}
+
+/* Кастомный чекбокс */
+.set-checkbox-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.set-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.set-row:hover .set-checkbox {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.set-checkbox.checked {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.checkmark {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  animation: checkPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Пустые состояния */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+}
+
+.empty-emoji {
+  font-size: 44px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.empty-state h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.empty-state p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+/* --- Вкладка: Прогресс --- */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 16px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s, border-color 0.5s, box-shadow 0.5s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.stat-card-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.water-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.28) 0%, rgba(16, 185, 129, 0.06) 100%);
+  transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  overflow: hidden;
+}
+
+.water-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981, 0 0 15px rgba(16, 185, 129, 0.6);
+  z-index: 3;
+}
+
+.water-fill::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: -50%;
+  width: 200%;
+  height: 200px;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 39%;
+  animation: rotate-wave-1 9s infinite linear;
+  z-index: 2;
+}
+
+.water-fill-secondary {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.water-fill-secondary::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: -45%;
+  width: 200%;
+  height: 200px;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: 37%;
+  animation: rotate-wave-2 12s infinite linear;
+  z-index: 1;
+}
+
+@keyframes rotate-wave-1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes rotate-wave-2 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+.stat-icon {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+/* Свечение для карточек прогресса */
+.stat-card.purple { border-color: rgba(2, 132, 199, 0.2); }
+.stat-card.cyan { border-color: rgba(6, 182, 212, 0.2); }
+.stat-card.green { border-color: rgba(16, 185, 129, 0.2); }
+
+.progress-analysis-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.progress-analysis-card h3 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.progress-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.progress-bar-container {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.postpone-log-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+}
+
+.postpone-log-item:last-child {
+  border-bottom: none;
+}
+
+.postpone-log-item span:first-child {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* --- Вкладка: Профиль --- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.profile-form h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.form-description {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.form-group input {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #06b6d4 100%);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+}
+
+.btn-primary:hover, .btn-primary:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+}
+
+.btn-primary:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-muted);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-warning {
+  font-size: 11px;
+  color: var(--color-danger);
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.profile-author-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.author-badge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(6, 182, 212, 0.08);
+  color: var(--color-secondary);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: 8px;
+  padding: 4px 8px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.profile-author-card p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.author-sign {
+  margin-top: 10px;
+  font-weight: 700;
+  color: #fff !important;
+  text-align: right;
+}
+
+/* --- Нижняя навигация --- */
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  background: rgba(6, 9, 19, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-top: 1px solid var(--border-color);
+  z-index: 150;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 10px 18px;
+}
+
+.nav-item {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.nav-item.active {
+  color: var(--color-primary);
+  text-shadow: 0 0 10px rgba(2, 132, 199, 0.2);
+}
+
+.nav-icon {
+  font-size: 18px;
+}
+
+.nav-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- Модальные окна (Базовые) --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-card {
+  background: #0b0f19;
+  border: 1px solid var(--border-color);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px 36px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-overlay.alert-overlay {
+  align-items: center;
+}
+
+.modal-card.alert-modal {
+  background: rgba(15, 22, 42, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  max-width: 320px;
+  margin: 16px;
+  align-self: center;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  padding: 24px 20px 24px;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(2, 132, 199, 0.15);
+}
+
+/* Справка - контент */
+.help-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.help-section h4 {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.help-section p {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.help-section ul {
+  padding-left: 16px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.help-section li strong {
+  color: #fff;
+}
+
+/* --- Плашка разминки --- */
+.workout-warmup-notice {
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #f59e0b;
+  margin-bottom: 20px;
+  line-height: 1.4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.warmup-notice-text {
+  flex: 1;
+}
+
+.btn-warmup-ok {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-warmup-ok:hover, .btn-warmup-ok:active {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #fff;
+}
+
+/* --- Кнопка завершения недели --- */
+.btn-complete-week {
+  width: 100%;
+  background: linear-gradient(135deg, var(--color-success) 0%, #34d399 100%);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+  margin-top: 16px;
+  text-align: center;
+}
+
+.btn-complete-week:hover, .btn-complete-week:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-complete-week:active {
+  transform: translateY(1px);
+}
+
+/* --- Карточка выбора упражнения --- */
+.exercise-choice-card {
+  text-align: center;
+  padding: 32px 20px;
+  animation: popIn 0.3s ease;
+}
+
+.choice-emoji {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.exercise-choice-card h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.exercise-choice-card p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.choice-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.btn-secondary {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: #fff;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover, .btn-secondary:active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Карточка завершенной недели --- */
+.completed-week-card {
+  text-align: center;
+  padding: 36px 24px;
+  background: var(--bg-card);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08), inset 0 0 15px rgba(16, 185, 129, 0.05);
+  border-radius: 24px;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.completed-emoji {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.4));
+  animation: pulseGlowSuccess 2s infinite ease-in-out;
+}
+
+.completed-week-card h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.completed-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 28px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-reset-week {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto;
+}
+
+.btn-reset-week:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btn-reset-week:active {
+  transform: translateY(1px);
+}
+
+@keyframes pulseGlowSuccess {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.4));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.7));
+  }
+}
+
+/* === СТИЛИ ДЛЯ ЗАЛА СЛАВЫ (РЕКОРДЫ) === */
+.tab-records {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: slideIn 0.3s ease;
+}
+
+.card-subtitle {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: -4px;
+  margin-bottom: 16px;
+}
+
+.calc-inputs-row {
+  display: flex;
+  gap: 12px;
+}
+
+.calc-inputs-row .form-group {
+  flex: 1;
+}
+
+.calc-inputs-row .form-group input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.calc-result-box {
+  background: rgba(2, 132, 199, 0.05);
+  border: 1px dashed rgba(2, 132, 199, 0.3);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.result-1pm {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 12px;
+}
+
+.result-1pm span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.result-1pm strong {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--color-primary);
+  text-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+}
+
+.warmup-helper h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.warmup-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.warmup-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.warmup-row span:first-child {
+  color: var(--color-text-muted);
+}
+
+.warmup-row span:last-child {
+  color: #fff;
+}
+
+.record-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.record-form select {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 36px 12px 14px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: all 0.2s ease;
+}
+
+.record-form select:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(2, 132, 199, 0.4);
+}
+
+.record-form select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.2);
+}
+
+.record-form select option,
+.chart-category-select option {
+  background-color: #0b0f19;
+  color: #fff;
+}
+
+.btn-submit-record {
+  margin-top: 8px;
+}
+
+/* Стили графика */
+.chart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chart-header-row h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.chart-category-select {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 28px 6px 10px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: all 0.2s ease;
+}
+
+.chart-category-select:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(2, 132, 199, 0.3);
+}
+
+.chart-category-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.chart-wrapper {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.chart-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.progress-chart-svg {
+  overflow: visible;
+}
+
+.chart-point-group circle {
+  transition: r 0.2s ease, fill 0.2s ease;
+  cursor: pointer;
+}
+
+.chart-point-group:hover circle {
+  r: 7;
+  fill: var(--color-primary);
+}
+
+.chart-point-text {
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* Сетка карточек рекордов */
+.records-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.records-list-section h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.empty-records-state {
+  text-align: center;
+  padding: 30px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.records-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.record-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 16px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.record-card:hover {
+  border-color: rgba(2, 132, 199, 0.2);
+}
+
+.record-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.record-date {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.btn-delete-record {
+  background: rgba(239, 68, 68, 0.03);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  font-size: 10px;
+  font-weight: 700;
+  color: #f87171;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-delete-record:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.record-movement-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.record-stats-row {
+  display: flex;
+  gap: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 8px 0;
+}
+
+.record-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.record-stat-item .label {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.record-stat-item .value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.record-stat-item .value.highlight {
+  color: var(--color-primary);
+  text-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
+}
+
+.record-video-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.record-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.btn-share-record {
+  margin-top: 4px;
+  padding: 10px 12px !important;
+  font-size: 12px !important;
+  font-weight: 700;
+}
+
+/* --- Карусель выбора активной программы --- */
+.programs-tabs-carousel {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 4px;
+  margin-bottom: 16px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.programs-tabs-carousel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.program-tab-btn {
+  flex: 0 0 auto;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-muted);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.program-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.program-tab-btn.active {
+  background: rgba(2, 132, 199, 0.12);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.25);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+/* --- Опасная кнопка удаления программы --- */
+.btn-danger-outline {
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-danger-outline:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #ef4444;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger-outline:active {
+  transform: scale(0.98);
+}
+
+/* --- Стилизация модального окна "Отложить тренировку" --- */
+.modal-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.reason-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.reason-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-muted);
+  padding: 10px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.reason-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.reason-btn.active {
+  background: rgba(2, 132, 199, 0.12);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.2);
+}
+
+.modal-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.modal-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.15);
+}
+
+.day-picker {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.day-picker::-webkit-scrollbar {
+  display: none;
+}
+
+.day-pick-btn {
+  flex: 1;
+  min-width: 42px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-muted);
+  padding: 10px 0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.day-pick-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.day-pick-btn.active {
+  background: rgba(6, 182, 212, 0.12);
+  border-color: var(--color-secondary);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn-cancel {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-muted);
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn-cancel:active {
+  transform: scale(0.98);
+}
+
+/* --- Кнопка лайка рекорда (Респект) --- */
+.btn-like-record {
+  background: rgba(249, 115, 22, 0.05);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  color: #fdba74;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.btn-like-record:hover {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.45);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.2);
+}
+
+.btn-like-record:active {
+  transform: translateY(1px);
+}
+
+.btn-like-record.liked {
+  background: rgba(249, 115, 22, 0.25);
+  border-color: rgba(249, 115, 22, 0.7);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.35);
+}
+
+/* --- Категория рекорда (Бейдж) --- */
+.record-category-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: rgba(2, 132, 199, 0.1);
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- Кастомная загрузка файлов --- */
+.file-upload-group {
+  margin-top: 4px;
+}
+
+.file-upload-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+}
+
+.custom-file-upload:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(2, 132, 199, 0.35);
+}
+
+.file-upload-btn {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+  border: 1px solid rgba(2, 132, 199, 0.3);
+  color: #f1f5f9;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.file-upload-btn:hover {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+  transform: translateY(-1px);
+}
+
+.file-upload-btn:active {
+  transform: translateY(1px);
+}
+
+.file-name-display {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Custom Select Dropdown Styles */
+.custom-select-container {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.custom-select-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(2, 132, 199, 0.4);
+}
+
+.custom-select-trigger.open {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.2);
+}
+
+.custom-select-arrow {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  transform: rotate(45deg);
+  margin-top: -3px;
+  transition: transform 0.2s ease;
+}
+
+.custom-select-trigger.open .custom-select-arrow {
+  transform: rotate(-135deg);
+  margin-top: 3px;
+}
+
+.custom-select-options {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.95); /* Slate dark glassmorphic background */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(2, 132, 199, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(2, 132, 199, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  max-height: 250px;
+  overflow-y: auto;
+  animation: selectFadeInDown 0.15s ease-out;
+}
+
+@keyframes selectFadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-select-option {
+  padding: 12px 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-select-option:hover {
+  background: rgba(2, 132, 199, 0.15);
+  color: #fff;
+}
+
+.custom-select-option.selected {
+  background: linear-gradient(90deg, rgba(2, 132, 199, 0.25) 0%, rgba(6, 182, 212, 0.15) 100%);
+  color: #fff;
+  font-weight: 700;
+  border-left: 3px solid var(--color-primary);
+  padding-left: 11px;
+}
+
+/* Modifier for progress chart header dropdown */
+.chart-category-container {
+  width: 170px;
+}
+
+.chart-category-container .custom-select-trigger {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.chart-category-container .custom-select-option {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+/* Styled native file selector button (fallback/extra protection) */
+input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-text) !important;
+  padding: 8px 16px;
+  border-radius: 10px !important;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 12px;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: rgba(6, 182, 212, 0.1) !important;
+  border-color: var(--color-primary) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+*, *::before, *::after {
+  text-shadow: none !important;
+}
+
+.card,
+.workout-card,
+.records-section-card,
+.profile-form,
+.error-card,
+.modal-content,
+.reschedule-modal-content,
+.help-modal-content,
+.empty-records-state {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), 0 0 15px rgba(6, 182, 212, 0.05) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  background-color: rgba(6, 9, 19, 0.6) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-text) !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary) !important;
+  background-color: rgba(6, 9, 19, 0.8) !important;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25) !important;
+}
+
+.custom-select-trigger {
+  background-color: rgba(6, 9, 19, 0.6) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-text) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+.custom-select-trigger:focus,
+.custom-select-trigger.open {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25) !important;
+}
+.custom-select-options {
+  background-color: rgba(10, 25, 47, 0.95) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(6, 182, 212, 0.15) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+.custom-select-option {
+  color: var(--color-text) !important;
+  transition: all 0.2s ease !important;
+}
+.custom-select-option:hover {
+  background: rgba(6, 182, 212, 0.15) !important;
+  color: #fff !important;
+}
+.custom-select-option.selected {
+  background: rgba(6, 182, 212, 0.25) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-left: 3px solid var(--color-primary) !important;
+}
+
+.btn-primary,
+button[type="submit"].btn-primary,
+.btn-submit-record {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+button[type="submit"].btn-primary:hover {
+  filter: brightness(1.1) !important;
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.35) !important;
+}
+
+.btn-primary:disabled {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-text-muted) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+
+.btn-secondary,
+.btn-help,
+.btn-postpone,
+.btn-delete-record,
+.file-upload-btn {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-text) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-secondary:hover,
+.btn-help:hover,
+.btn-postpone:hover,
+.file-upload-btn:hover {
+  background: rgba(6, 182, 212, 0.1) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-delete-record:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: var(--color-danger) !important;
+  color: #ffffff !important;
+}
+
+.weeks-carousel,
+.days-selector,
+.programs-tabs-carousel {
+  background: rgba(6, 9, 19, 0.4) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 14px !important;
+  padding: 4px !important;
+}
+
+.week-btn,
+.day-btn,
+.program-tab-btn {
+  border-radius: 10px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--color-text-muted) !important;
+  transition: all 0.2s ease !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+
+.week-btn.active,
+.day-btn.active,
+.program-tab-btn.active {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%) !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25) !important;
+}
+
+.week-btn:hover,
+.day-btn:hover,
+.program-tab-btn:hover {
+  color: var(--color-text) !important;
+}
+
+.navigation-bar {
+  background: rgba(10, 25, 47, 0.8) !important;
+  border-top: 1px solid var(--border-color) !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.nav-btn {
+  color: var(--color-text-muted) !important;
+}
+
+.nav-btn.active {
+  color: var(--color-primary) !important;
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.4) !important;
+}
+
+input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-text) !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 700;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: rgba(6, 182, 212, 0.1) !important;
+  border-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+
+.header-subtitle {
+  color: var(--color-primary) !important;
+  font-weight: 700 !important;
+}
+
+.tonnage-value {
+  color: var(--color-secondary) !important;
+  text-shadow: 0 0 10px rgba(0, 242, 254, 0.3) !important;
+}
+
+.workout-tonnage {
+  color: var(--color-secondary) !important;
+  background: rgba(6, 182, 212, 0.08) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+}
+
+.exercise-name {
+  border-left: 3px solid var(--color-primary) !important;
+  color: var(--color-text) !important;
+}
+
+.record-category-badge {
+  background: rgba(6, 182, 212, 0.08) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--color-primary) !important;
+  border-radius: 16px !important;
+}
+
+.postpone-badge {
+  background: rgba(245, 158, 11, 0.08) !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+  color: #f59e0b !important;
+  border-radius: 16px !important;
+}
+
+.app-header {
+  background: rgba(6, 9, 19, 0.8) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.modal-overlay {
+  background: rgba(6, 9, 19, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.calc-result-box {
+  background: rgba(6, 9, 19, 0.4) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.result-1pm strong {
+  color: var(--color-secondary) !important;
+}
+
+.set-row {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.set-row.completed {
+  background-color: rgba(16, 185, 129, 0.06) !important;
+}
+
+.set-num.completed {
+  background: var(--color-success) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
+}

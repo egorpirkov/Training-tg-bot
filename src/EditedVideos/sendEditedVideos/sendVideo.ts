@@ -3,7 +3,11 @@ import fs from "fs";
 import path from "path";
 
 const videosDir = path.join(process.cwd(), 'src', 'Edits'); 
-let usedIndexes: number[] = [];
+export const userUsedIndexes = new Map<number, number[]>();
+
+export function resetUserEdits(chatId: number) {
+  userUsedIndexes.set(chatId, []);
+}
 
 export async function sendRandomVideo(bot: TelegramBot, chatId: number) {
   const files = fs.readdirSync(videosDir).filter(file =>
@@ -15,12 +19,22 @@ export async function sendRandomVideo(bot: TelegramBot, chatId: number) {
     return;
   }
 
-  // Отправляем временное сообщение о загрузке
-  const loadingMsg = await bot.sendMessage(chatId, " *Достаю эдит из хранилище...*", { parse_mode: "Markdown" });
+  let usedIndexes = userUsedIndexes.get(chatId) || [];
 
   if (usedIndexes.length >= files.length) {
-    usedIndexes = [];
+    await bot.sendMessage(chatId, " Похоже, ты посмотрел все доступные эдиты.", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: ' Смотреть сначала', callback_data: 'reset_edits' }
+          ]
+        ]
+      }
+    });
+    return;
   }
+
+  const loadingMsg = await bot.sendMessage(chatId, " *Достаю эдит из хранилища...*", { parse_mode: "Markdown" });
 
   let index: number;
   do {
@@ -28,21 +42,18 @@ export async function sendRandomVideo(bot: TelegramBot, chatId: number) {
   } while (usedIndexes.includes(index));
 
   usedIndexes.push(index);
+  userUsedIndexes.set(chatId, usedIndexes);
 
   const videoPath = path.join(videosDir, files[index]);
 
-  const current = usedIndexes.length;
-  const total = files.length;
-
   try {
-    await bot.sendVideo(chatId, videoPath, {
-      caption: ` Осталось эдитов ${current}/${total}`
-    });
+    await bot.sendVideo(chatId, videoPath);
   } catch (error) {
     console.error("Ошибка при отправке видео:", error);
     await bot.sendMessage(chatId, " Не удалось отправить эдит.");
   } finally {
-    // Удаляем сообщение о загрузке
+
     await bot.deleteMessage(chatId, loadingMsg.message_id).catch(() => {});
   }
 }
+

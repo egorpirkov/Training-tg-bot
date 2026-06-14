@@ -45,7 +45,6 @@ export const Bench = async (bot: TelegramBot, msg: Message) => {
           matches = false;
         }
 
-        // Проверка множителя веса
         if (rule.bsMultiplier && !(BS >= weight * rule.bsMultiplier)) {
           matches = false;
         }
@@ -56,7 +55,6 @@ export const Bench = async (bot: TelegramBot, msg: Message) => {
         }
       }
 
-      // Если правило не найдено, используем дефолт
       if (!evaluation) {
         evaluation = 'Хороший результат! Продолжай тренироваться!';
       }
