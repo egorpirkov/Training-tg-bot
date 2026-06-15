@@ -14,6 +14,7 @@ import { sendRandomVideo } from './EditedVideos/sendEditedVideos/sendVideo';
 import { getVideoHandler } from './EditedVideos/getEditedVideos/getVideo';
 import express from 'express';
 import path from 'path';
+import https from 'https';
 import { helpHandler } from './handlers/helpHandler';
 import { 
   saveUser, 
@@ -63,6 +64,10 @@ app.use((req, res, next) => {
 app.post('/api/log', (req, res) => {
   console.log('[FRONTEND LOG]', req.body.message);
   res.json({ success: true });
+});
+
+app.get('/api/ping', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 
@@ -473,9 +478,19 @@ app.listen(PORT, () => {
   });
 
   if (!isLocal) {
-    bot.setWebHook(`https://training-tg-bot-1.onrender.com/bot${token}`)
-      .then(() => console.log('Вебхук успешно установлен.'))
+    const webhookUrl = webAppUrl.endsWith('/') ? `${webAppUrl}bot${token}` : `${webAppUrl}/bot${token}`;
+    bot.setWebHook(webhookUrl)
+      .then(() => console.log(`Вебхук успешно установлен на ${webhookUrl}`))
       .catch(err => console.error('Ошибка установки вебхука:', err));
+
+    const pingUrl = webAppUrl.endsWith('/') ? `${webAppUrl}api/ping` : `${webAppUrl}/api/ping`;
+    setInterval(() => {
+      https.get(pingUrl, (res) => {
+        console.log(`[Keep-Alive] Pinged self at ${pingUrl}, response status: ${res.statusCode}`);
+      }).on('error', (err) => {
+        console.error('[Keep-Alive] Error pinging self:', err.message);
+      });
+    }, 10 * 60 * 1000); // 10 minutes
   }
 });
 
