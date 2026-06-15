@@ -23,6 +23,7 @@ WORKDIR /app
 # Copy built app and dependencies from builder
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/src/Edits ./src/Edits
 COPY package*.json ./
 
