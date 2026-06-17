@@ -71,7 +71,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                 setActiveProgramTitle(p.title);
                 localStorage.setItem('activeProgramTitle', p.title);
                 if (p.weeks.length > 0) {
-                  setSelectedWeek(1);
+                  setSelectedWeek(0);
                   if (p.weeks[0].days.length > 0) {
                     setSelectedDay(p.weeks[0].days[0].dayName);
                   }
@@ -139,7 +139,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                     if (w.days.length > 0) setSelectedDay(w.days[0].dayName);
                   }}
                 >
-                  Неделя {w.weekIndex}
+                  Неделя {w.weekIndex + 1}
                 </button>
               ))}
             </div>
@@ -163,11 +163,11 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
             {program.completedWeeks?.includes(selectedWeek) ? (
               <div className="completed-week-card card animate-pop">
                 <span className="completed-emoji"></span>
-                <h3>Неделя {selectedWeek} завершена!</h3>
+                <h3>Неделя {selectedWeek + 1} завершена!</h3>
                 <p className="completed-desc">
                   Вы успешно выполнили все подходы и тренировки этой недели. 
-                  {selectedWeek < program.weeks.length 
-                    ? ` Приступайте к Неделе ${selectedWeek + 1}!` 
+                  {selectedWeek < program.weeks.length - 1 
+                    ? ` Приступайте к Неделе ${selectedWeek + 2}!` 
                     : ' Поздравляем! Вы полностью завершили программу тренировок!'}
                 </p>
                 <button 
@@ -182,7 +182,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                 <div className="workout-header">
                   <div>
                     <h2 className="workout-day-title">
-                      {selectedDay.toUpperCase()} · Неделя {selectedWeek}
+                      {selectedDay.toUpperCase()} · Неделя {selectedWeek + 1}
                     </h2>
                     {postponeInfo && (
                       <div className="postpone-badge">
@@ -299,7 +299,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                     onClick={() => handleCompleteWeek(selectedWeek)}
                     style={{ marginTop: 16 }}
                   >
-                    Завершить неделю {selectedWeek}
+                    Завершить неделю {selectedWeek + 1}
                   </button>
                 )}
               </div>

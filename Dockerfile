@@ -25,6 +25,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/src/Edits ./src/Edits
+COPY --from=builder /app/src/assets ./src/assets
 COPY package*.json ./
 
 # Create data directory for SQLite database persistence

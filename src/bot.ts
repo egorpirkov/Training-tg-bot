@@ -649,16 +649,69 @@ async function checkAndSendReminders() {
       
       const todayWorkout = currentWeek.days.find((d: any) => d.dayName === todayDayName);
       if (todayWorkout && todayWorkout.exercises && todayWorkout.exercises.length > 0) {
-        const exercisesListText = todayWorkout.exercises
-          .map((ex: any, idx: number) => `${idx + 1}. *${ex.name}* (${ex.sets} подходов)`)
-          .join('\n');
+        let reminderText = "";
+        const isBenchOrDips = programData && programData.title && (programData.title.includes('Жим') || programData.title.includes('Брусья'));
+        
+        if (isBenchOrDips) {
+          const totalSets = todayWorkout.exercises.reduce((sum: number, ex: any) => sum + (ex.sets || 1), 0);
+          let intensityText = "Средняя тренировка (умеренный объем)";
+          if (totalSets < 8) {
+            intensityText = "Легкая тренировка (лайтовая)";
+          } else if (totalSets >= 12) {
+            intensityText = "Тяжелая тренировка (большой объем)";
+          }
           
+          const grouped: Record<string, { totalSets: number; weights: number[] }> = {};
+          todayWorkout.exercises.forEach((ex: any) => {
+            const name = ex.name === "Отжимания на брусьях" ? "Отжимания на брусьях с доп.весом" : ex.name;
+            if (!grouped[name]) {
+              grouped[name] = { totalSets: 0, weights: [] };
+            }
+            grouped[name].totalSets += ex.sets || 1;
+            if (typeof ex.weightKg === 'number') {
+              grouped[name].weights.push(ex.weightKg);
+            }
+          });
+          
+          const getSetsPlural = (count: number) => {
+            const lastDigit = count % 10;
+            const lastTwoDigits = count % 100;
+            if (lastTwoDigits >= 11 && lastTwoDigits <= 19) return `${count} подходов`;
+            if (lastDigit === 1) return `${count} подход`;
+            if (lastDigit >= 2 && lastDigit <= 4) return `${count} подхода`;
+            return `${count} подходов`;
+          };
+          
+          const lines = Object.entries(grouped).map(([name, info]) => {
+            let weightPart = "";
+            if (info.weights.length > 0) {
+              const minW = Math.min(...info.weights);
+              const maxW = Math.max(...info.weights);
+              weightPart = minW === maxW ? ` (рабочий вес: ${minW} кг)` : ` (рабочие веса: ${minW}–${maxW} кг)`;
+            }
+            return `• *${name}*: всего ${getSetsPlural(info.totalSets)}${weightPart}`;
+          });
+          
+          reminderText = 
+            `*Сегодня день тренировки!* \n\n` +
+            `Неделя ${currentWeek.weekIndex + 1} · ${todayDayName.toUpperCase()} · *${intensityText}*\n\n` +
+            `*Программа на сегодня:*\n${lines.join('\n')}\n\n` +
+            `Обязательно разомнитесь перед началом тренировки и не забудьте отметить выполненные подходы в тренировочном дневнике!`;
+        } else {
+          const exercisesListText = todayWorkout.exercises
+            .map((ex: any, idx: number) => `${idx + 1}. *${ex.name}* (${ex.sets} подходов)`)
+            .join('\n');
+            
+          reminderText = 
+            `*Сегодня день тренировки!* \n\n` +
+            `Неделя ${currentWeek.weekIndex + 1} · ${todayDayName.toUpperCase()}\n\n` +
+            `*Программа на сегодня:*\n${exercisesListText}\n\n` +
+            `Обязательно разомнитесь перед началом тренировки и не забудьте отметить выполненные подходы в тренировочном дневнике!`;
+        }
+        
         await bot.sendMessage(
           chatId,
-          `*Сегодня день тренировки!* \n\n` +
-          `Неделя ${currentWeek.weekIndex + 1} · ${todayDayName.toUpperCase()}\n\n` +
-          `*Программа на сегодня:*\n${exercisesListText}\n\n` +
-          `Обязательно разомнитесь перед началом тренировки и не забудьте отметить выполненные подходы в тренировочном дневнике!`,
+          reminderText,
           { parse_mode: 'Markdown' }
         ).then(async () => {
           console.log(`Напоминание успешно отправлено пользователю ${chatId}`);

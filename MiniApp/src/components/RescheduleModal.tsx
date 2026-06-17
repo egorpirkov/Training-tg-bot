@@ -34,7 +34,7 @@ export const RescheduleModal: React.FC<RescheduleModalProps> = ({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-card" onClick={e => e.stopPropagation()}>
         <h3 className="modal-title">Отложить тренировку</h3>
-        <p className="modal-subtitle">{selectedDay.toUpperCase()} · Неделя {selectedWeek}</p>
+        <p className="modal-subtitle">{selectedDay.toUpperCase()} · Неделя {selectedWeek + 1}</p>
 
         <div className="modal-section-label">Причина</div>
         <div className="reason-buttons">

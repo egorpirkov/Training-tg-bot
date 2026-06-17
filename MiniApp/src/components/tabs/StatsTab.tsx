@@ -106,7 +106,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
           <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Отложенные тренировки</h3>
           {postponed.map((p, i) => (
             <div key={i} className="postpone-log-item">
-              <span>Неделя {p.weekIndex} · {p.dayName.toUpperCase()}</span>
+              <span>Неделя {p.weekIndex + 1} · {p.dayName.toUpperCase()}</span>
               <span className="postpone-log-reason">
                 {reasonLabel(p.reason)}
                 {p.reasonText ? ` — ${p.reasonText}` : ''}

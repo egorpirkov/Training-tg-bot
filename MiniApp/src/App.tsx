@@ -46,7 +46,7 @@ export default function App() {
   const [completedSets, setCompletedSets] = useState<Array<CompletedSetKey & { weight: number; reps: number }>>([]);
   const [, setStats] = useState<UserStats>({ totalTonnage: 0, completedSetsCount: 0, activeDaysCount: 0 });
   const [userWeight, setUserWeight] = useState<number>(80);
-  const [selectedWeek, setSelectedWeek] = useState<number>(1);
+  const [selectedWeek, setSelectedWeek] = useState<number>(0);
   const [selectedDay, setSelectedDay] = useState<string>('пн');
   const [loading, setLoading] = useState<boolean>(true);
   const [savingWeight, setSavingWeight] = useState<boolean>(false);
@@ -176,7 +176,6 @@ export default function App() {
           progDataArray.forEach(item => {
             const prog = item.programData;
             if (prog && prog.weeks) {
-              prog.weeks = prog.weeks.filter((w: Week) => w.weekIndex !== 0);
               loadedPrograms.push(prog);
             }
           });
@@ -479,21 +478,21 @@ export default function App() {
     });
   };
 
-  const handleCompleteWeek = async (weekNum: number) => {
+  const handleCompleteWeek = async (weekIndex: number) => {
     if (!program || !currentWeekObj) return;
 
     if (!isWeekFullyCompleted(currentWeekObj)) {
-      alert(`Вы не завершили неделю ${weekNum}.`);
+      alert(`Вы не завершили неделю ${weekIndex + 1}.`);
       return;
     }
 
     const completedWeeks = program.completedWeeks || [];
-    if (completedWeeks.includes(weekNum)) {
-      alert(`Неделя ${weekNum} уже завершена!`);
+    if (completedWeeks.includes(weekIndex)) {
+      alert(`Неделя ${weekIndex + 1} уже завершена!`);
       return;
     }
 
-    const updatedCompletedWeeks = [...completedWeeks, weekNum];
+    const updatedCompletedWeeks = [...completedWeeks, weekIndex];
     const updatedProgram: ProgramData = {
       ...program,
       completedWeeks: updatedCompletedWeeks
@@ -507,12 +506,12 @@ export default function App() {
       });
       if (res.ok) {
         setProgram(updatedProgram);
-        alert(`Неделя ${weekNum} успешно завершена!`);
+        alert(`Неделя ${weekIndex + 1} успешно завершена!`);
         
         await fetch('/api/complete-week', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chatId, weekIndex: weekNum - 1, programTitle: program.title })
+          body: JSON.stringify({ chatId, weekIndex: weekIndex, programTitle: program.title })
         });
       } else {
         alert('Не удалось сохранить завершение недели в БД.');
@@ -522,10 +521,10 @@ export default function App() {
     }
   };
 
-  const handleResetWeek = async (weekNum: number) => {
+  const handleResetWeek = async (weekIndex: number) => {
     if (!program) return;
     const completedWeeks = program.completedWeeks || [];
-    const updatedCompletedWeeks = completedWeeks.filter(num => num !== weekNum);
+    const updatedCompletedWeeks = completedWeeks.filter(num => num !== weekIndex);
     const updatedProgram: ProgramData = {
       ...program,
       completedWeeks: updatedCompletedWeeks
@@ -539,7 +538,7 @@ export default function App() {
       });
       if (res.ok) {
         setProgram(updatedProgram);
-        alert(`Завершение недели ${weekNum} сброшено.`);
+        alert(`Завершение недели ${weekIndex + 1} сброшено.`);
       } else {
         alert('Не удалось сбросить неделю.');
       }
