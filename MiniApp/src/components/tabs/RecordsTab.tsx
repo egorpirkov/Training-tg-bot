@@ -102,30 +102,30 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
           <div className="records-section-card card">
             <h3>Калькулятор 1ПМ</h3>
             <p className="card-subtitle">Узнайте свой одноповторный максимум(для корректного результата выберите упражнение в разделе "тренировки").</p>
-            
+
             <div className="calc-inputs-row">
               <div className="form-group">
                 <label>Рабочий вес (кг):</label>
-                <input 
-                  type="number" 
-                  placeholder="80" 
-                  value={calcWeight} 
-                  onChange={e => setCalcWeight(e.target.value)} 
+                <input
+                  type="number"
+                  placeholder="80"
+                  value={calcWeight}
+                  onChange={e => setCalcWeight(e.target.value)}
                 />
               </div>
               <div className="form-group">
                 <label>Повторения:</label>
-                <input 
-                  type="number" 
-                  placeholder="5" 
+                <input
+                  type="number"
+                  placeholder="5"
                   min="1"
                   max="100"
-                  value={calcReps} 
-                  onChange={e => setCalcReps(e.target.value)} 
+                  value={calcReps}
+                  onChange={e => setCalcReps(e.target.value)}
                 />
               </div>
             </div>
-            
+
             {calcWeight && calcReps && (() => {
               const val = calculateWeb1PM();
               return (
@@ -149,19 +149,19 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
             <form onSubmit={handleAddRecord} className="record-form">
               <div className="form-group">
                 <label>(Описание):</label>
-                <input 
-                  type="text" 
-                  placeholder="Например: сделал дипсы с 40кг" 
-                  value={recMovement} 
-                  onChange={e => setRecMovement(e.target.value)} 
-                  required 
+                <input
+                  type="text"
+                  placeholder="Например: сделал дипсы с 40кг"
+                  value={recMovement}
+                  onChange={e => setRecMovement(e.target.value)}
+                  required
                 />
               </div>
-              
+
               <div className="form-group">
                 <label>Категория для графика:</label>
-                <CustomSelect 
-                  value={recCategory} 
+                <CustomSelect
+                  value={recCategory}
                   onChange={val => setRecCategory(val as any)}
                   options={[
                     { value: 'bench', label: 'Жим штанги лёжа' },
@@ -171,41 +171,41 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
                   ]}
                 />
               </div>
-              
+
               <div className="calc-inputs-row">
                 <div className="form-group">
                   <label>Вес (кг):</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     step="0.1"
-                    placeholder="100" 
-                    value={recWeight} 
-                    onChange={e => setRecWeight(e.target.value)} 
-                    required 
+                    placeholder="100"
+                    value={recWeight}
+                    onChange={e => setRecWeight(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="form-group">
                   <label>Повторения:</label>
-                  <input 
-                    type="number" 
-                    placeholder="3" 
-                    value={recReps} 
-                    onChange={e => setRecReps(e.target.value)} 
-                    required 
+                  <input
+                    type="number"
+                    placeholder="3"
+                    value={recReps}
+                    onChange={e => setRecReps(e.target.value)}
+                    required
                   />
                 </div>
               </div>
-              
+
               <div className="form-group file-upload-group">
                 <label className="file-upload-label">Видео (до 15 МБ, опционально):</label>
                 <div className="custom-file-upload">
                   <label htmlFor="record-video-input" className="file-upload-btn">
                     Выбрать файл
                   </label>
-                  <input 
+                  <input
                     id="record-video-input"
-                    type="file" 
-                    accept="video/*" 
+                    type="file"
+                    accept="video/*"
                     onChange={e => {
                       const file = e.target.files?.[0];
                       if (file) {
@@ -228,7 +228,7 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
                   </span>
                 </div>
               </div>
-              
+
               <button type="submit" className="btn-primary btn-submit-record" disabled={uploadingRecord}>
                 {uploadingRecord ? 'Сохранение рекорда...' : 'Записать рекорд'}
               </button>
@@ -236,22 +236,44 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
           </div>
 
           {program && (program.title.includes('Подтягивания') || program.title.includes('Брусья')) && (
-            <form className="profile-form card" onSubmit={handleSaveWeight}>
+            <form className="profile-form card" onSubmit={(e) => {
+              if (userWeight < 30) {
+                e.preventDefault();
+                alert('Пожалуйста, укажите реальный вес (не менее 30 кг)');
+                return;
+              }
+              handleSaveWeight(e);
+            }}>
               <h3>Настройка: Вес тела атлета</h3>
               <p className="form-description">Вес тела нужен для точного расчёта тоннажа в подтягиваниях и брусьях.</p>
               <div className="form-group">
                 <label htmlFor="weight-input">Вес тела (кг):</label>
-                <input 
-                  id="weight-input" 
-                  type="number" 
-                  step="0.1" 
-                  value={userWeight} 
-                  onChange={e => setUserWeight(parseFloat(e.target.value) || 0)} 
-                  placeholder="80" 
-                  required 
+                <input
+                  id="weight-input"
+                  type="number"
+                  step="0.1"
+                  value={userWeight === 0 ? '' : userWeight}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setUserWeight(val === '' ? 0 : parseFloat(val) || 0);
+                  }}
+                  placeholder="80"
+                  required
                 />
               </div>
-              <button type="submit" className="btn-primary" disabled={savingWeight}>
+
+              {userWeight > 0 && userWeight < 30 && (
+                <p style={{ color: 'var(--tg-theme-destructive-text-color, #000000)', fontSize: '13px', marginTop: '-10px', marginBottom: '15px' }}>
+                  Укажите реальный вес (от 30 кг)
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="btn-primary"
+
+                disabled={savingWeight || userWeight < 30}
+              >
                 {savingWeight ? 'Сохранение...' : 'Сохранить вес'}
               </button>
             </form>
@@ -278,17 +300,17 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
                             {getCategoryLabel(rec.category, rec.movement)}
                           </span>
                         </div>
-                        <button 
-                          className="btn-delete-record" 
+                        <button
+                          className="btn-delete-record"
                           onClick={() => handleDeleteRecord(rec.id)}
                           title="Удалить рекорд"
                         >
                           Удалить
                         </button>
                       </div>
-                      
+
                       <div className="record-movement-title">{rec.movement}</div>
-                      
+
                       <div className="record-stats-row">
                         <div className="record-stat-item">
                           <span className="label">Результат</span>
@@ -299,30 +321,30 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
                           <span className="value highlight">~{rounded1PM} кг</span>
                         </div>
                       </div>
-                      
+
                       {rec.videoPath && (
                         <div className="record-video-container">
-                          <video 
-                            className="record-video" 
-                            src={getVideoUrl(rec.videoPath)} 
-                            controls 
-                            playsInline 
-                            preload="metadata" 
+                          <video
+                            className="record-video"
+                            src={getVideoUrl(rec.videoPath)}
+                            controls
+                            playsInline
+                            preload="metadata"
                           />
                         </div>
                       )}
-                      
+
                       <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                        <button 
-                          className="btn-share-record btn-secondary" 
+                        <button
+                          className="btn-share-record btn-secondary"
                           onClick={() => handleShareRecord(rec)}
                           disabled={sharingRecordId === rec.id}
                           style={{ flex: 1, margin: 0 }}
                         >
                           {sharingRecordId === rec.id ? 'Отправка...' : 'Похвастаться'}
                         </button>
-                        <button 
-                          className={`btn-like-record ${likedRecordIds.includes(rec.id) ? 'liked' : ''}`} 
+                        <button
+                          className={`btn-like-record ${likedRecordIds.includes(rec.id) ? 'liked' : ''}`}
                           onClick={() => handleLikeRecord(rec.id)}
                           style={{ flex: 1, margin: 0 }}
                         >
@@ -362,9 +384,9 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
                         {getCategoryLabel(rec.category, rec.movement)}
                       </span>
                     </div>
-                    
+
                     <div className="record-movement-title">{rec.movement}</div>
-                    
+
                     <div className="record-stats-row">
                       <div className="record-stat-item">
                         <span className="label">Результат</span>
@@ -375,21 +397,21 @@ export const RecordsTab: React.FC<RecordsTabProps> = ({
                         <span className="value highlight">~{rounded1PM} кг</span>
                       </div>
                     </div>
-                    
+
                     {rec.videoPath && (
                       <div className="record-video-container">
-                        <video 
-                          className="record-video" 
-                          src={getVideoUrl(rec.videoPath)} 
-                          controls 
-                          playsInline 
-                          preload="metadata" 
+                        <video
+                          className="record-video"
+                          src={getVideoUrl(rec.videoPath)}
+                          controls
+                          playsInline
+                          preload="metadata"
                         />
                       </div>
                     )}
-                    
-                    <button 
-                      className={`btn-like-record ${likedRecordIds.includes(rec.id) ? 'liked' : ''}`} 
+
+                    <button
+                      className={`btn-like-record ${likedRecordIds.includes(rec.id) ? 'liked' : ''}`}
                       onClick={() => handleLikeRecord(rec.id)}
                     >
                       Респект {rec.likes || 0}
