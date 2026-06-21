@@ -25,7 +25,7 @@ COPY --from=builder /app/src/Edits ./src/Edits
 COPY --from=builder /app/src/assets ./src/assets
 COPY package*.json ./
 
-RUN echo "TELEGRAM_BOT_TOKEN=${BOT_SECRET_TOKEN}" > .env
+RUN echo "BOT_TOKEN=${BOT_SECRET_TOKEN}" > .env
 
 RUN mkdir -p /app/data
 

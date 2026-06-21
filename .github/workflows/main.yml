@@ -65,9 +65,12 @@ jobs:
           
           IMAGE_TAG="sha-$(echo "${{ github.sha }}" | head -c 7)"
           echo "New image tag will be: $IMAGE_TAG"
+
+          IMAGE_NAME_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "Normalized lowercase image: ghcr.io/$IMAGE_NAME_LOWER"
           
 
-          sed -i "s|image: ghcr.io/.*|image: ghcr.io/${{ github.repository }}:${IMAGE_TAG}|g" ./deployment.yaml
+          sed -i "s|image: ghcr.io/.*|image: ghcr.io/${IMAGE_NAME_LOWER}:${IMAGE_TAG}|g" ./deployment.yaml
 
       - name: Commit and Push to GitOps Repo
         run: |
